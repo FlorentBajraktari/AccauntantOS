@@ -27,11 +27,11 @@ export default function Dashboard() {
 
   const stats = [
     { label: t("dashboard.companies"), value: data.total_companies, icon: Building2, tone: "brand", testid: "stat-companies", go: "/companies" },
-    { label: t("dashboard.pendingTasks"), value: data.pending_tasks, icon: ListTodo, tone: "amber", testid: "stat-tasks" },
-    { label: t("dashboard.missingDocs"), value: data.missing_documents, icon: FileWarning, tone: "red", testid: "stat-missing" },
-    { label: t("dashboard.overdueInvoices"), value: data.overdue_invoices, icon: AlertTriangle, tone: "red", testid: "stat-overdue", sub: chf(data.overdue_amount) },
-    { label: t("dashboard.openVat"), value: data.open_vat_deadlines, icon: Receipt, tone: "brand", testid: "stat-vat" },
-    { label: t("dashboard.monthlyRevenue"), value: chf(data.monthly_revenue), icon: TrendingUp, tone: "green", testid: "stat-revenue" },
+    { label: t("dashboard.pendingTasks"), value: data.pending_tasks, icon: ListTodo, tone: "amber", testid: "stat-tasks", go: "/month-end" },
+    { label: t("dashboard.missingDocs"), value: data.missing_documents, icon: FileWarning, tone: "red", testid: "stat-missing", go: "/documents" },
+    { label: t("dashboard.overdueInvoices"), value: data.overdue_invoices, icon: AlertTriangle, tone: "red", testid: "stat-overdue", sub: chf(data.overdue_amount), go: "/payables" },
+    { label: t("dashboard.openVat"), value: data.open_vat_deadlines, icon: Receipt, tone: "brand", testid: "stat-vat", go: "/vat" },
+    { label: t("dashboard.monthlyRevenue"), value: chf(data.monthly_revenue), icon: TrendingUp, tone: "green", testid: "stat-revenue", go: "/reports" },
   ];
 
   return (
@@ -52,10 +52,17 @@ export default function Dashboard() {
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
-        {stats.map((s) => (
-          <div key={s.label} onClick={() => s.go && navigate(s.go)} className={s.go ? "cursor-pointer" : ""}>
-            <StatCard {...s} />
-          </div>
+        {stats.map((s, i) => (
+          <button
+            key={s.label}
+            type="button"
+            onClick={() => s.go && navigate(s.go)}
+            data-testid={`${s.testid}-link`}
+            style={{ animationDelay: `${i * 60}ms` }}
+            className="text-left group rounded-md animate-fade-up focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 cursor-pointer"
+          >
+            <StatCard {...s} clickable />
+          </button>
         ))}
       </div>
 

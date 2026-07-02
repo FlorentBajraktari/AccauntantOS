@@ -32,9 +32,14 @@ const TONES = {
   slate: "bg-slate-100 text-slate-600",
 };
 
-export function StatCard({ label, value, icon: Icon, tone = "slate", sub, testid }) {
+export function StatCard({ label, value, icon: Icon, tone = "slate", sub, testid, clickable }) {
   return (
-    <Card className="p-5 transition-all duration-200 hover:shadow-md hover:-translate-y-[1px]" data-testid={testid}>
+    <Card
+      className={`p-5 h-full transition-all duration-200 hover:shadow-md hover:-translate-y-[1px] ${
+        clickable ? "hover:border-primary/40" : ""
+      }`}
+      data-testid={testid}
+    >
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs font-semibold tracking-wide uppercase text-slate-500">{label}</p>
@@ -42,7 +47,7 @@ export function StatCard({ label, value, icon: Icon, tone = "slate", sub, testid
           {sub && <p className="mt-1 text-xs text-slate-400">{sub}</p>}
         </div>
         {Icon && (
-          <div className={`h-10 w-10 rounded-md flex items-center justify-center ${TONES[tone]}`}>
+          <div className={`h-10 w-10 rounded-md flex items-center justify-center transition-transform duration-200 ${clickable ? "group-hover:scale-110" : ""} ${TONES[tone]}`}>
             <Icon className="h-5 w-5" strokeWidth={1.5} />
           </div>
         )}

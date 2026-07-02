@@ -1,0 +1,34 @@
+{
+  "summary": "Bug fix verification for 'stuck on Building dashboard' — Bearer token via localStorage (aos_token) is now correctly set on login and attached via axios interceptor. Full end-to-end frontend verification passed.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "verifications": {
+    "login_redirects_to_dashboard": true,
+    "dashboard_renders_kpis_charts_recent_deadlines": true,
+    "not_stuck_on_building_dashboard_loader": true,
+    "token_persisted_in_localStorage_aos_token": true,
+    "hard_reload_keeps_user_authenticated": true,
+    "sidebar_all_12_pages_load_without_401_or_stuck": true,
+    "logout_clears_token_and_redirects_to_login": true,
+    "post_logout_dashboard_visit_redirects_to_login": true
+  },
+  "pages_navigated_ok": ["Companies","Documents","Payables","Receivables","Bank Reconciliation","VAT","Month-End Close","Reports","Excel Center","Client Portal","Audit Trail","Settings"],
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Token stored in localStorage (XSS risk). httpOnly cookie fallback still works server-side; consider preferring cookie auth in production and using localStorage only as fallback.",
+    "AuthContext relies solely on token presence to trigger /auth/me; if token is expired the user briefly sees a flash before being redirected — acceptable but could show a loader."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a (not tested)", "frontend": "100%"},
+  "test_credentials": "admin@accountantos.ch / Admin123!",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Bearer token fix verified. localStorage key is 'aos_token'. Excel downloads use same axios instance so also carry the header.",
+  "rca of the issue": "Previous flow relied on httpOnly cookie which the browser did not send on cross-origin API calls in the user's environment → /api/dashboard returned 401 → Dashboard.jsx never resolved its loading state and stayed on 'Building dashboard'. Fix: login/register responses include a JWT; frontend stores it in localStorage['aos_token'] and axios request interceptor adds `Authorization: Bearer <token>`. Backend get_current_user already supports Bearer fallback."
+}

@@ -4,9 +4,11 @@ import { toast } from "sonner";
 import { api, downloadFile } from "@/lib/api";
 import { PageHeader, Card, Loading } from "@/components/common";
 import CompanySelect from "@/components/CompanySelect";
+import { useI18n } from "@/i18n/I18nContext";
 import { Button } from "@/components/ui/button";
 
 export default function ExcelCenter() {
+  const { t } = useI18n();
   const [templates, setTemplates] = useState(null);
   const [companies, setCompanies] = useState([]);
   const [company, setCompany] = useState("all");
@@ -26,7 +28,7 @@ export default function ExcelCenter() {
 
   return (
     <div>
-      <PageHeader title="Excel Import / Export Center" subtitle="Professional Swiss accounting templates with styled headers, frozen panes, filters & instructions" />
+      <PageHeader title={t("pages.excel.title")} subtitle={t("pages.excel.subtitle")} />
 
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <CompanySelect value={company} onChange={setCompany} companies={companies} />

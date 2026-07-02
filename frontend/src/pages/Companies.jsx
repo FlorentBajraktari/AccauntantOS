@@ -4,6 +4,7 @@ import { Building2, Plus, Pencil, Trash2, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { api, formatApiErrorDetail } from "@/lib/api";
 import { PageHeader, Card, Loading, EmptyState, StatusBadge } from "@/components/common";
+import { useI18n } from "@/i18n/I18nContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,6 +25,7 @@ const EMPTY = {
 };
 
 export default function Companies() {
+  const { t } = useI18n();
   const [companies, setCompanies] = useState(null);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(EMPTY);
@@ -82,9 +84,9 @@ export default function Companies() {
   return (
     <div>
       <PageHeader
-        title="Companies"
-        subtitle={`${companies.length} client ${companies.length === 1 ? "company" : "companies"} under management`}
-        actions={<Button data-testid="add-company-btn" onClick={openCreate}><Plus className="h-4 w-4 mr-1" /> Add Company</Button>}
+        title={t("pages.companies.title")}
+        subtitle={`${companies.length} ${t("pages.companies.subtitle")}`}
+        actions={<Button data-testid="add-company-btn" onClick={openCreate}><Plus className="h-4 w-4 mr-1" /> {t("common.add")}</Button>}
       />
 
       {companies.length === 0 ? (

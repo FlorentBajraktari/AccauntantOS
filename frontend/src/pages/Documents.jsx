@@ -5,6 +5,7 @@ import { api, formatApiErrorDetail } from "@/lib/api";
 import { chf, fmtDate } from "@/lib/format";
 import { PageHeader, Card, Loading, EmptyState, StatusBadge, TableShell } from "@/components/common";
 import CompanySelect from "@/components/CompanySelect";
+import { useI18n } from "@/i18n/I18nContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +17,7 @@ const CATS = ["Invoice", "Receipt", "Bank Statement", "Payroll", "Contract", "Ta
 const STATUSES = ["uploaded", "reviewed", "booked", "rejected"];
 
 export default function Documents() {
+  const { t } = useI18n();
   const [companies, setCompanies] = useState([]);
   const [docs, setDocs] = useState(null);
   const [company, setCompany] = useState("all");
@@ -73,9 +75,9 @@ export default function Documents() {
   return (
     <div>
       <PageHeader
-        title="Documents"
-        subtitle="Upload, categorize and extract data from client documents"
-        actions={<Button data-testid="add-document-btn" onClick={() => setOpen(true)}><Plus className="h-4 w-4 mr-1" /> Add Document</Button>}
+        title={t("pages.documents.title")}
+        subtitle={t("pages.documents.subtitle")}
+        actions={<Button data-testid="add-document-btn" onClick={() => setOpen(true)}><Plus className="h-4 w-4 mr-1" /> {t("common.add")}</Button>}
       />
 
       <div className="flex flex-wrap items-center gap-3 mb-4">

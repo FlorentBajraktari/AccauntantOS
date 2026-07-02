@@ -5,6 +5,7 @@ import { api, downloadFile, formatApiErrorDetail } from "@/lib/api";
 import { fmtDate } from "@/lib/format";
 import { PageHeader, Card, Loading, EmptyState, StatusBadge } from "@/components/common";
 import CompanySelect from "@/components/CompanySelect";
+import { useI18n } from "@/i18n/I18nContext";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -13,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 const STATUSES = ["pending", "in_progress", "completed", "blocked"];
 
 export default function MonthEndClose() {
+  const { t } = useI18n();
   const [companies, setCompanies] = useState([]);
   const [company, setCompany] = useState("all");
   const [items, setItems] = useState(null);
@@ -45,8 +47,8 @@ export default function MonthEndClose() {
 
   return (
     <div>
-      <PageHeader title="Month-End Close" subtitle="Standardised close checklist per company"
-        actions={<Button variant="outline" data-testid="export-checklist-btn" onClick={exportExcel}><Download className="h-4 w-4 mr-1" /> Export Checklist</Button>}
+      <PageHeader title={t("pages.monthEnd.title")} subtitle={t("pages.monthEnd.subtitle")}
+        actions={<Button variant="outline" data-testid="export-checklist-btn" onClick={exportExcel}><Download className="h-4 w-4 mr-1" /> {t("common.export")}</Button>}
       />
       <div className="mb-4"><CompanySelect value={company} onChange={setCompany} companies={companies} /></div>
 

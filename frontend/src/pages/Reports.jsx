@@ -8,6 +8,7 @@ import { api, downloadFile } from "@/lib/api";
 import { chf } from "@/lib/format";
 import { PageHeader, Card, Loading, StatCard, EmptyState } from "@/components/common";
 import CompanySelect from "@/components/CompanySelect";
+import { useI18n } from "@/i18n/I18nContext";
 import { Button } from "@/components/ui/button";
 
 const COLORS = ["hsl(220 100% 50%)", "hsl(160 84% 39%)", "hsl(38 92% 50%)", "hsl(340 82% 52%)", "hsl(262 83% 58%)", "#94a3b8"];
@@ -22,6 +23,7 @@ const EXPORTS = [
 ];
 
 export default function Reports() {
+  const { t } = useI18n();
   const [companies, setCompanies] = useState([]);
   const [company, setCompany] = useState("all");
   const [pl, setPl] = useState(null);
@@ -49,7 +51,7 @@ export default function Reports() {
 
   return (
     <div>
-      <PageHeader title="Reports" subtitle="Financial statements and analytics — exportable to Excel" />
+      <PageHeader title={t("pages.reports.title")} subtitle={t("pages.reports.subtitle")} />
       <div className="mb-4"><CompanySelect value={company} onChange={setCompany} companies={companies} /></div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">

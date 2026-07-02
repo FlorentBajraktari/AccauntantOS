@@ -6,10 +6,12 @@ import { api } from "@/lib/api";
 import { chf, fmtDate } from "@/lib/format";
 import { PageHeader, Card, Loading, EmptyState, StatusBadge } from "@/components/common";
 import CompanySelect from "@/components/CompanySelect";
+import { useI18n } from "@/i18n/I18nContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function ClientPortal() {
+  const { t } = useI18n();
   const { id } = useParams();
   const [companies, setCompanies] = useState([]);
   const [company, setCompany] = useState(id || "");
@@ -34,7 +36,7 @@ export default function ClientPortal() {
 
   return (
     <div>
-      <PageHeader title="Client Portal" subtitle="Client-facing view: documents, questions, deadlines & approvals" />
+      <PageHeader title={t("pages.portal.title")} subtitle={t("pages.portal.subtitle")} />
       <div className="mb-4">
         <CompanySelect value={company} onChange={setCompany} companies={companies} includeAll={false} />
       </div>

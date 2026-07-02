@@ -3,6 +3,7 @@ import { Settings as SettingsIcon, Save, Building2, Receipt, Bell } from "lucide
 import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { PageHeader, Card, Loading } from "@/components/common";
+import { useI18n } from "@/i18n/I18nContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 
 export default function Settings() {
+  const { t } = useI18n();
   const [s, setS] = useState(null);
 
   useEffect(() => { api.get("/settings").then((r) => setS(r.data)); }, []);
@@ -38,8 +40,8 @@ export default function Settings() {
 
   return (
     <div>
-      <PageHeader title="Settings" subtitle="Firm profile, VAT, currency and preferences"
-        actions={<Button data-testid="save-settings-btn" onClick={save}><Save className="h-4 w-4 mr-1" /> Save Changes</Button>}
+      <PageHeader title={t("pages.settings.title")} subtitle={t("pages.settings.subtitle")}
+        actions={<Button data-testid="save-settings-btn" onClick={save}><Save className="h-4 w-4 mr-1" /> {t("common.saveChanges")}</Button>}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

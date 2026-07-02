@@ -5,9 +5,11 @@ import { api, downloadFile } from "@/lib/api";
 import { chf, fmtDate } from "@/lib/format";
 import { PageHeader, Card, Loading, EmptyState, StatCard, TableShell, StatusBadge } from "@/components/common";
 import CompanySelect from "@/components/CompanySelect";
+import { useI18n } from "@/i18n/I18nContext";
 import { Button } from "@/components/ui/button";
 
 export default function BankReconciliation() {
+  const { t } = useI18n();
   const [companies, setCompanies] = useState([]);
   const [company, setCompany] = useState("all");
   const [report, setReport] = useState(null);
@@ -51,7 +53,7 @@ export default function BankReconciliation() {
 
   return (
     <div>
-      <PageHeader title="Bank Reconciliation" subtitle="Import statements and match transactions to invoices"
+      <PageHeader title={t("pages.bank.title")} subtitle={t("pages.bank.subtitle")}
         actions={
           <>
             <input type="file" accept=".csv" ref={fileRef} onChange={onUpload} className="hidden" data-testid="csv-file-input" />

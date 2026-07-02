@@ -5,6 +5,7 @@ import { api, formatApiErrorDetail, downloadFile } from "@/lib/api";
 import { chf, fmtDate, daysUntil } from "@/lib/format";
 import { PageHeader, Card, Loading, EmptyState, StatusBadge, StatCard, TableShell } from "@/components/common";
 import CompanySelect from "@/components/CompanySelect";
+import { useI18n } from "@/i18n/I18nContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,6 +16,7 @@ const PAY_STATUS = ["unpaid", "partial", "paid", "overdue"];
 
 export default function InvoiceModule({ type, partyField, title, subtitle, excelKey }) {
   const isAP = type === "payables";
+  const { t } = useI18n();
   const [companies, setCompanies] = useState([]);
   const [company, setCompany] = useState("all");
   const [report, setReport] = useState(null);
@@ -62,11 +64,11 @@ export default function InvoiceModule({ type, partyField, title, subtitle, excel
 
   return (
     <div>
-      <PageHeader title={title} subtitle={subtitle}
+      <PageHeader title={t(`pages.${type}.title`)} subtitle={t(`pages.${type}.subtitle`)}
         actions={
           <>
-            <Button variant="outline" data-testid="export-aging-btn" onClick={exportExcel}><Download className="h-4 w-4 mr-1" /> Export Aging</Button>
-            <Button data-testid="add-invoice-btn" onClick={() => setOpen(true)}><Plus className="h-4 w-4 mr-1" /> Add Invoice</Button>
+            <Button variant="outline" data-testid="export-aging-btn" onClick={exportExcel}><Download className="h-4 w-4 mr-1" /> {t("invoice.exportAging")}</Button>
+            <Button data-testid="add-invoice-btn" onClick={() => setOpen(true)}><Plus className="h-4 w-4 mr-1" /> {t("invoice.addInvoice")}</Button>
           </>
         }
       />
@@ -76,18 +78,18 @@ export default function InvoiceModule({ type, partyField, title, subtitle, excel
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-        <StatCard label="Outstanding" value={chf(a.total)} icon={Wallet} tone="brand" testid="stat-outstanding" />
-        <StatCard label="Current" value={chf(a.current)} tone="green" />
-        <StatCard label="1-30 days" value={chf(a.b1_30)} tone="amber" />
-        <StatCard label="31-60 days" value={chf(a.b31_60)} tone="amber" />
-        <StatCard label="61-90 days" value={chf(a.b61_90)} tone="red" />
-        <StatCard label="90+ days" value={chf(a.b90)} icon={AlertTriangle} tone="red" />
+        <StatCard label={t("invoice.outstanding")} value={chf(a.total)} icon={Wallet} tone="brand" testid="stat-outstanding" />
+        <StatCard label={t("invoice.current")} value={chf(a.current)} tone="green" />
+        <StatCard label={`1-30 ${t("common.days")}`} value={chf(a.b1_30)} tone="amber" />
+        <StatCard label={`31-60 ${t("common.days")}`} value={chf(a.b31_60)} tone="amber" />
+        <StatCard label={`61-90 ${t("common.days")}`} value={chf(a.b61_90)} tone="red" />
+        <StatCard label={`90+ ${t("common.days")}`} value={chf(a.b90)} icon={AlertTriangle} tone="red" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           {report.items.length === 0 ? (
-            <Card className="p-6"><EmptyState icon={Wallet} title="No invoices" desc="Add an invoice to build the aging report." /></Card>
+            <Card className="p-6"><EmptyState icon={Wallet} title={t("invoice.noInvoices")} desc="" /></Card>
           ) : (
             <TableShell testid={`${type}-table`} head={[
               { label: isAP ? "Supplier" : "Customer" }, { label: "Invoice" }, { label: "Company" },
@@ -118,7 +120,7 @@ export default function InvoiceModule({ type, partyField, title, subtitle, excel
 
         <Card className="p-5 h-fit">
           <h3 className="font-display font-semibold text-slate-800 flex items-center gap-2 mb-4">
-            <Users className="h-4 w-4 text-primary" /> {isAP ? "Supplier" : "Customer"} Balances
+            <Users className="h-4 w-4 text-primary" /> {isAP ? t("invoice.supplierBalances") : t("invoice.customerBalances")}
           </h3>
           {Object.keys(balances).length === 0 ? (
             <p className="text-sm text-slate-400">No open balances.</p>

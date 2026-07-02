@@ -4,6 +4,7 @@ import { api } from "@/lib/api";
 import { fmtDateTime } from "@/lib/format";
 import { PageHeader, Card, Loading, EmptyState, TableShell } from "@/components/common";
 import CompanySelect from "@/components/CompanySelect";
+import { useI18n } from "@/i18n/I18nContext";
 
 const ACTION_LABEL = {
   document_uploaded: "Document uploaded", document_reviewed: "Document reviewed",
@@ -17,6 +18,7 @@ const ACTION_LABEL = {
 };
 
 export default function AuditTrail() {
+  const { t } = useI18n();
   const [companies, setCompanies] = useState([]);
   const [company, setCompany] = useState("all");
   const [logs, setLogs] = useState(null);
@@ -34,7 +36,7 @@ export default function AuditTrail() {
 
   return (
     <div>
-      <PageHeader title="Audit Trail" subtitle="Immutable log of every action across the workspace" />
+      <PageHeader title={t("pages.audit.title")} subtitle={t("pages.audit.subtitle")} />
       <div className="mb-4"><CompanySelect value={company} onChange={setCompany} companies={companies} /></div>
 
       {logs.length === 0 ? (

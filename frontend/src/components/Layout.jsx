@@ -6,23 +6,25 @@ import {
   Search, LogOut, Menu, X, Calculator,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useI18n } from "@/i18n/I18nContext";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { api } from "@/lib/api";
 import { Input } from "@/components/ui/input";
 
 const NAV = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/companies", label: "Companies", icon: Building2 },
-  { to: "/documents", label: "Documents", icon: FileText },
-  { to: "/payables", label: "Payables", icon: ArrowDownCircle },
-  { to: "/receivables", label: "Receivables", icon: ArrowUpCircle },
-  { to: "/bank", label: "Bank Reconciliation", icon: Landmark },
-  { to: "/vat", label: "VAT", icon: Receipt },
-  { to: "/month-end", label: "Month-End Close", icon: CheckSquare },
-  { to: "/reports", label: "Reports", icon: BarChart3 },
-  { to: "/excel", label: "Excel Center", icon: FileSpreadsheet },
-  { to: "/portal", label: "Client Portal", icon: Users },
-  { to: "/audit", label: "Audit Trail", icon: History },
-  { to: "/settings", label: "Settings", icon: Settings },
+  { to: "/dashboard", key: "dashboard", icon: LayoutDashboard },
+  { to: "/companies", key: "companies", icon: Building2 },
+  { to: "/documents", key: "documents", icon: FileText },
+  { to: "/payables", key: "payables", icon: ArrowDownCircle },
+  { to: "/receivables", key: "receivables", icon: ArrowUpCircle },
+  { to: "/bank", key: "bank", icon: Landmark },
+  { to: "/vat", key: "vat", icon: Receipt },
+  { to: "/month-end", key: "monthEnd", icon: CheckSquare },
+  { to: "/reports", key: "reports", icon: BarChart3 },
+  { to: "/excel", key: "excel", icon: FileSpreadsheet },
+  { to: "/portal", key: "portal", icon: Users },
+  { to: "/audit", key: "audit", icon: History },
+  { to: "/settings", key: "settings", icon: Settings },
 ];
 
 function GlobalSearch() {
@@ -30,6 +32,7 @@ function GlobalSearch() {
   const [results, setResults] = useState([]);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const { t } = useI18n();
   const ref = useRef();
 
   useEffect(() => {
@@ -66,7 +69,7 @@ function GlobalSearch() {
         value={q}
         onChange={(e) => setQ(e.target.value)}
         onFocus={() => results.length && setOpen(true)}
-        placeholder="Search companies, documents, invoices…"
+        placeholder={t("search")}
         className="pl-9 h-9 bg-slate-50 border-slate-200"
       />
       {open && results.length > 0 && (
@@ -92,6 +95,7 @@ function GlobalSearch() {
 
 export default function Layout() {
   const { user, logout } = useAuth();
+  const { t } = useI18n();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const sidebar = (
@@ -102,7 +106,7 @@ export default function Layout() {
         </div>
         <div>
           <p className="font-display font-bold text-slate-900 leading-none">AccountantOS</p>
-          <p className="text-[10px] text-slate-400 mt-0.5">Accounting Operations</p>
+          <p className="text-[10px] text-slate-400 mt-0.5">{t("tagline")}</p>
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
@@ -111,7 +115,7 @@ export default function Layout() {
             key={item.to}
             to={item.to}
             onClick={() => setMobileOpen(false)}
-            data-testid={`nav-${item.label.toLowerCase().replace(/[^a-z]+/g, "-")}`}
+            data-testid={`nav-${item.key}`}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                 isActive
@@ -121,7 +125,7 @@ export default function Layout() {
             }
           >
             <item.icon className="h-[18px] w-[18px]" strokeWidth={1.5} />
-            {item.label}
+            {t(`nav.${item.key}`)}
           </NavLink>
         ))}
       </nav>
@@ -160,13 +164,14 @@ export default function Layout() {
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
           <GlobalSearch />
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-2">
+            <LanguageSwitcher />
             <button
               onClick={logout}
               data-testid="logout-btn"
               className="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 transition-colors px-3 py-1.5 rounded-md hover:bg-slate-100"
             >
-              <LogOut className="h-4 w-4" /> <span className="hidden sm:inline">Logout</span>
+              <LogOut className="h-4 w-4" /> <span className="hidden sm:inline">{t("logout")}</span>
             </button>
           </div>
         </header>

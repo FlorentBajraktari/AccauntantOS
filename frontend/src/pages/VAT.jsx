@@ -5,9 +5,11 @@ import { api, downloadFile } from "@/lib/api";
 import { chf } from "@/lib/format";
 import { PageHeader, Card, Loading, StatCard, StatusBadge, TableShell, EmptyState } from "@/components/common";
 import CompanySelect from "@/components/CompanySelect";
+import { useI18n } from "@/i18n/I18nContext";
 import { Button } from "@/components/ui/button";
 
 export default function VAT() {
+  const { t } = useI18n();
   const [companies, setCompanies] = useState([]);
   const [company, setCompany] = useState("all");
   const [data, setData] = useState(null);
@@ -30,8 +32,8 @@ export default function VAT() {
 
   return (
     <div>
-      <PageHeader title="VAT / Tax Preparation" subtitle="Swiss VAT reconciliation · Country: Switzerland"
-        actions={<Button variant="outline" data-testid="export-vat-btn" onClick={exportExcel}><Download className="h-4 w-4 mr-1" /> Export VAT Summary</Button>}
+      <PageHeader title={t("pages.vat.title")} subtitle={t("pages.vat.subtitle")}
+        actions={<Button variant="outline" data-testid="export-vat-btn" onClick={exportExcel}><Download className="h-4 w-4 mr-1" /> {t("common.export")}</Button>}
       />
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <CompanySelect value={company} onChange={setCompany} companies={companies} />

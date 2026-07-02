@@ -2,6 +2,7 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { I18nProvider } from "@/i18n/I18nContext";
 import { Loading } from "@/components/common";
 import Layout from "@/components/Layout";
 import Login from "@/pages/Login";
@@ -57,12 +58,14 @@ function AppRoutes() {
 export default function App() {
   return (
     <div className="App">
-      <AuthProvider>
-        <BrowserRouter>
-          <AppRoutes />
-          <Toaster position="top-right" richColors />
-        </BrowserRouter>
-      </AuthProvider>
+      <I18nProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <AppRoutes />
+            <Toaster position="top-right" richColors />
+          </BrowserRouter>
+        </AuthProvider>
+      </I18nProvider>
     </div>
   );
 }

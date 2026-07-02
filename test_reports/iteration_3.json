@@ -1,0 +1,29 @@
+{
+  "summary": "Verified branding badge fix on /login and /dashboard. FIX HAS FAILED — external emergent-main.js still replaces the badge with an <a> tag containing the Emergent SVG logo, href to app.emergent.sh, and text 'Made with Emergent'. The enforcer script in /app/frontend/public/index.html is not winning against the external replacement (even after ~5s wait + MutationObserver + 250ms setInterval).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "#emergent-badge (public/index.html)", "issue": "External script https://assets.emergent.sh/scripts/emergent-main.js replaces the badge div with an <A> element. DOM inspection: tag=A, href=https://app.emergent.sh/?utm_source=emergent-badge, target=_blank, text='Made with Emergent', hasSvg=1. Enforcer script does not neutralize it. Persists on both /login and /dashboard, and 5s after load.", "selector": "#emergent-badge", "priority": "HIGH"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [
+    "The enforcer runs but emergent-main.js re-replaces the entire #emergent-badge element (not just its children), so childList observer on body should catch it — verify enforcer is even executing (add console.log). Likely emergent-main.js loads AFTER enforcer registration but replaces the node via outerHTML/replaceChild, and the observer on document.body should fire for that. Suggested fixes: (a) Load enforcer script with defer and register a MutationObserver on document.documentElement with subtree:true, attributes:true, childList:true; (b) Instead of observing, use a setInterval(enforceBadge, 200) that runs indefinitely (current one clears after 10s); (c) Remove the <script src='https://assets.emergent.sh/scripts/emergent-main.js'></script> line from index.html entirely — this is the cleanest fix since the app owns the badge; (d) Alternatively, override window.fetch/DOM APIs to block that script or add a CSP.",
+    "Recommended: Remove the emergent-main.js <script> tag from /app/frontend/public/index.html line 26 to eliminate the source of the override."
+  ],
+  "critical_code_review_comments": [
+    "index.html line 26 loads the external emergent-main.js which is the exact source of the badge override — removing this line is the simplest and most reliable fix.",
+    "Enforcer setInterval stops after 40 tries (10s); external script could re-run later. Consider unbounded interval or persistent MutationObserver on document.documentElement.",
+    "Current MutationObserver watches document.body — should catch node replacement, but not attribute mutations on the badge itself; add attributes:true, attributeFilter:['href','target']."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "0% (branding badge fix)"},
+  "test_credentials": "admin@accountantos.ch / Admin123! (login verified successfully)",
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Only branding badge is under test. Check DOM of #emergent-badge for tag=DIV, no href, no svg/img descendants, and textContent containing 'Made with' + heart character (❤). Wait ~5s after load to confirm external script doesn't revert.",
+  "rca of the issue": "External script emergent-main.js (loaded via <script src> in <head> at line 26 of public/index.html) replaces the #emergent-badge element entirely with a fresh <a> tag containing the Emergent logo/link/text. The client-side enforcer script (bottom of body) runs but its MutationObserver + interval do not effectively counteract the replacement — either because emergent-main.js runs after the interval clears (10s), or replaces the element in a way that doesn't trigger the childList observer on body (unlikely), or because the enforcer's changes are subsequently overwritten. Definitive fix: remove the <script src='https://assets.emergent.sh/scripts/emergent-main.js'></script> line."
+}

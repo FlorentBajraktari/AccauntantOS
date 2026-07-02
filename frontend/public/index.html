@@ -37,6 +37,28 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+        <style>
+            #emergent-badge {
+                transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease !important;
+                opacity: 0.92;
+            }
+            #emergent-badge:hover {
+                transform: translateY(-2px) !important;
+                box-shadow: 0 10px 26px rgba(0, 0, 0, 0.32) !important;
+                opacity: 1;
+            }
+            #emergent-badge .aos-heart {
+                display: inline-block;
+                animation: aosBeat 1.5s ease-in-out infinite;
+            }
+            @keyframes aosBeat {
+                0%, 100% { transform: scale(1); }
+                15% { transform: scale(1.28); }
+                30% { transform: scale(1); }
+                45% { transform: scale(1.16); }
+                60% { transform: scale(1); }
+            }
+        </style>
         <a
             id="emergent-badge"
             href="https://www.florentdev.online"
@@ -45,33 +67,38 @@
             style="
                 display: inline-flex !important;
                 box-sizing: border-box;
-                height: 40px;
-                padding: 8px 16px;
+                height: 26px;
+                padding: 4px 10px;
                 align-items: center !important;
-                gap: 6px;
-                border-radius: 50px !important;
-                background: #000 !important;
+                gap: 5px;
+                border-radius: 999px !important;
+                background: linear-gradient(135deg, #0b1220 0%, #1e293b 100%) !important;
+                border: 1px solid rgba(255, 255, 255, 0.14) !important;
+                box-shadow: 0 4px 14px rgba(2, 6, 23, 0.25) !important;
                 position: fixed !important;
-                bottom: 16px;
-                right: 16px;
-                text-decoration: none;
+                bottom: 14px;
+                right: 14px;
+                text-decoration: none !important;
                 cursor: pointer;
                 z-index: 9999 !important;
             "
         >
             <p
+                data-heart="1"
                 style="
-                    color: #FFF !important;
+                    color: #cbd5e1 !important;
                     font-family: 'Inter', sans-serif !important;
-                    font-size: 13px !important;
+                    font-size: 10.5px !important;
                     font-weight: 600 !important;
-                    line-height: 20px !important;
+                    letter-spacing: 0.2px !important;
+                    line-height: 1 !important;
                     margin: 0 !important;
                     white-space: nowrap !important;
                 "
             >
-                Made with <span style="color:#ff4d6d !important;">&#10084;</span>
+                Made with
             </p>
+            <span class="aos-heart" style="color: #ff4d6d !important; font-size: 11px !important; line-height: 1 !important;">&#10084;</span>
         </a>
         <script>
             !(function (t, e) {

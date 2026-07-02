@@ -1,0 +1,28 @@
+{
+  "summary": "Tested modernized Excel Center (frontend + backend). Backend: 11/11 pytest cases pass — /api/excel/templates returns 14 templates with key/title/description/category/icon; all 9 required download keys produce valid openpyxl-loadable .xlsx with main sheet + 'How to use' sheet; ap_aging with company_id works. Frontend: /excel renders modern toolbar (14 templates count, search box, company selector), 5 category sections, 14 template cards. Search 'aging' correctly filters to 2 cards in 1 category. Download works without company (profit_loss, 7147 bytes, PK magic) and with company (ap_aging with Ticino Design Studio, 7683 bytes). i18n regression works: DE ('Excel Import- / Export-Center') and FR ('Centre d'import / export Excel') titles+subtitles translated, sidebar translated, downloads still succeed in DE (vat_summary 7330 bytes, profit_loss 7147 bytes).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/excel", "issues": [
+        "Hardcoded English strings not routed through i18n on the Excel Center page — even after switching to DE/FR/IT the following remain English: '14 templates' subtext ('Styled · frozen panes · filters · instructions'), search placeholder 'Search templates…', category section headers (Financial Statements, Ledgers & Accounts, Payables & Receivables, VAT & Bank, Operations), the helper line 'Select a company to auto-fill data-backed templates (AP/AR, VAT, Bank, P&L…).', and the toast strings 'Generating …' / '… downloaded' / 'Export failed'. Title/subtitle and Download button label are translated correctly. Recommend moving these strings into /app/frontend/src/i18n/translations.js under pages.excel.* and common.*."
+      ]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/backend_test.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "OPTIONAL: Translate remaining hardcoded English strings in ExcelCenter.jsx (category headers, search placeholder, toolbar meta, helper text, toast messages) — currently only title/subtitle and 'Download .xlsx' button label go through i18n."
+  ],
+  "critical_code_review_comments": [
+    "ExcelCenter.jsx: search placeholder, category names, toolbar meta text, and toast strings are hardcoded — inconsistent with the rest of the i18n refactor.",
+    "excel_export.py: TEMPLATES dict is large (206 lines) but focused and readable — no action needed. Template titles/descriptions are English only (server-side); acceptable since these are also stored server-side."
+  ],
+  "updated_files": ["/app/backend/tests/backend_test.py"],
+  "success_rate": {"backend": "100% (11/11)", "frontend": "100% for functional flows; minor i18n gaps"},
+  "test_credentials": "admin@accountantos.ch / Admin123! (works, JWT via httpOnly cookie + token in body)",
+  "seed_data_creation": "none",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Excel Center fully verified. Backend excel_export.py generates valid xlsx (openpyxl-loadable, 2 sheets: main + 'How to use') for all 14 keys. UI has data-testid: excel-search, excel-category, excel-template-card, download-<key>, language-switcher. Company selector opens as dropdown; use role=option to pick a company. Only minor gap: several hardcoded English strings on /excel not run through i18n."
+}

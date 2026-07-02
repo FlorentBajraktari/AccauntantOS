@@ -249,8 +249,16 @@ class TestChecklist:
 
 
 # ---- Excel
-EXCEL_KEYS = ["ap_aging", "ar_aging", "vat_summary", "profit_loss",
-              "chart_of_accounts", "bank_reconciliation", "month_end_close"]
+EXCEL_KEYS = ["profit_loss", "ap_aging", "ar_aging", "vat_summary",
+              "chart_of_accounts", "bank_reconciliation", "month_end_close",
+              "expense_tracker", "revenue_tracker"]
+
+ALL_EXCEL_KEYS = [
+    "chart_of_accounts", "trial_balance", "general_ledger",
+    "ap_aging", "ar_aging", "vat_summary", "bank_reconciliation",
+    "month_end_close", "expense_tracker", "revenue_tracker",
+    "payroll_preparation", "profit_loss", "balance_sheet", "cash_flow",
+]
 
 
 class TestExcel:
@@ -259,13 +267,30 @@ class TestExcel:
         assert r.status_code == 200
         tpls = r.json()["templates"]
         assert len(tpls) == 14, f"expected 14 templates, got {len(tpls)}"
+        for t in tpls:
+            for field in ("key", "title", "description", "category", "icon"):
+                assert field in t and t[field], f"missing {field} in {t}"
+        keys = {t["key"] for t in tpls}
+        assert keys == set(ALL_EXCEL_KEYS), f"key mismatch: {keys ^ set(ALL_EXCEL_KEYS)}"
 
     @pytest.mark.parametrize("key", EXCEL_KEYS)
     def test_excel_download(self, client, key):
         r = client.get(f"{API}/excel/download/{key}")
         assert r.status_code == 200, f"{key}: {r.status_code} {r.text[:200]}"
-        # xlsx starts with PK zip magic
         assert r.content[:2] == b"PK", f"{key}: not xlsx"
+        # openpyxl-loadable + two sheets including "How to use"
+        from openpyxl import load_workbook
+        wb = load_workbook(io.BytesIO(r.content))
+        assert "How to use" in wb.sheetnames, f"{key}: missing 'How to use' sheet, got {wb.sheetnames}"
+        assert len(wb.sheetnames) >= 2, f"{key}: expected >=2 sheets, got {wb.sheetnames}"
+
+    def test_excel_download_with_company(self, client, company_id):
+        r = client.get(f"{API}/excel/download/ap_aging", params={"company_id": company_id})
+        assert r.status_code == 200
+        assert r.content[:2] == b"PK"
+        from openpyxl import load_workbook
+        wb = load_workbook(io.BytesIO(r.content))
+        assert "How to use" in wb.sheetnames
 
 
 # ---- Reports

@@ -1,0 +1,26 @@
+{
+  "summary": "Frontend-only test of the modernized Client Portal with client picker + search + i18n. All requested flows pass: 4 client cards render, 'Alpine' search filters to 1 card and clears back to 4, auto-select of first client works on load, modern gradient header with avatar/contact info and 4 stat chips render correctly, docs/missing/questions/deadlines sections render, answering an open question via answer-input + submit-answer-btn persists (PUT /questions/{id}), shows success toast, and the question flips to 'answered' with the submitted answer visible. i18n verified in DE/FR/IT — search placeholder, section titles (Documents/Missing/Questions/Deadlines), and stat chip labels all translate; selecting a client still works after language switch.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Client Portal — Missing Documents section", "issues": ["The status badge inside missing-documents list still reads hardcoded English 'Missing Documents' (StatusBadge) regardless of language. Section title correctly translates ('Fehlende Dokumente' / 'Documents manquants' / 'Documenti mancanti'), but the pill inside the row stays in English. Minor — likely comes from StatusBadge status prop being a literal string 'missing documents' in ClientPortal.jsx line 141."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "(Minor/optional) Localize the 'Missing Documents' status pill inside the Missing section of Client Portal — currently hardcoded English while section titles are translated."
+  ],
+  "critical_code_review_comments": [
+    "ClientPortal.jsx: useEffect on line 24 fetches /companies with empty deps but references `company` inside — works because guard uses if(!company) but React lint may warn about missing dep.",
+    "answer() posts full `que` object with spread — depends on backend accepting extra fields; safer to send only mutated fields."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a", "frontend": "100%"},
+  "test_credentials": "admin@accountantos.ch / Admin123!",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Client Portal enhancement verified end-to-end on preview URL. 4 seed clients: Ticino Design Studio, Bergland Consulting AG, Léman Bistro Sàrl, Alpine Tech Solutions GmbH. Language switcher testid='language-switcher' with menu items lang-option-{en|de|fr|it}. Only nit: hardcoded 'Missing Documents' badge string in ClientPortal.jsx L141."
+}

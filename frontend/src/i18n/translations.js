@@ -72,6 +72,13 @@ export const translations = {
       cats: { "Financial Statements": "Financial Statements", "Ledgers & Accounts": "Ledgers & Accounts",
         "Payables & Receivables": "Payables & Receivables", "VAT & Bank": "VAT & Bank", "Operations": "Operations" },
     },
+    cp: {
+      search: "Search clients…", pick: "Select a client", pickDesc: "Choose a company below to open its portal.",
+      none: "No clients found", docs: "Documents", missing: "Missing Documents", questions: "Questions",
+      deadlines: "Deadlines", allReceived: "All documents received", allReceivedDesc: "Nothing outstanding right now.",
+      noQuestions: "No questions", noDeadlines: "No deadlines", answerPh: "Type your answer…",
+      answered: "Answer submitted", open: "open",
+    },
   },
 
   de: {
@@ -136,6 +143,13 @@ export const translations = {
       generating: "Wird erstellt…", downloaded: "Heruntergeladen", failed: "Export fehlgeschlagen",
       cats: { "Financial Statements": "Abschlüsse", "Ledgers & Accounts": "Konten & Journale",
         "Payables & Receivables": "Kreditoren & Debitoren", "VAT & Bank": "MWST & Bank", "Operations": "Betrieb" },
+    },
+    cp: {
+      search: "Kunden suchen…", pick: "Kunde auswählen", pickDesc: "Wählen Sie unten eine Firma, um das Portal zu öffnen.",
+      none: "Keine Kunden gefunden", docs: "Dokumente", missing: "Fehlende Dokumente", questions: "Fragen",
+      deadlines: "Fristen", allReceived: "Alle Dokumente erhalten", allReceivedDesc: "Derzeit nichts offen.",
+      noQuestions: "Keine Fragen", noDeadlines: "Keine Fristen", answerPh: "Antwort eingeben…",
+      answered: "Antwort gesendet", open: "offen",
     },
   },
 
@@ -202,6 +216,13 @@ export const translations = {
       cats: { "Financial Statements": "États financiers", "Ledgers & Accounts": "Comptes & journaux",
         "Payables & Receivables": "Fournisseurs & clients", "VAT & Bank": "TVA & banque", "Operations": "Opérations" },
     },
+    cp: {
+      search: "Rechercher des clients…", pick: "Sélectionner un client", pickDesc: "Choisissez une entreprise ci-dessous pour ouvrir son portail.",
+      none: "Aucun client trouvé", docs: "Documents", missing: "Documents manquants", questions: "Questions",
+      deadlines: "Échéances", allReceived: "Tous les documents reçus", allReceivedDesc: "Rien en attente pour le moment.",
+      noQuestions: "Aucune question", noDeadlines: "Aucune échéance", answerPh: "Saisissez votre réponse…",
+      answered: "Réponse envoyée", open: "ouvertes",
+    },
   },
 
   it: {
@@ -266,6 +287,13 @@ export const translations = {
       generating: "Generazione…", downloaded: "Scaricato", failed: "Esportazione fallita",
       cats: { "Financial Statements": "Bilanci", "Ledgers & Accounts": "Conti & registri",
         "Payables & Receivables": "Fornitori & clienti", "VAT & Bank": "IVA & banca", "Operations": "Operazioni" },
+    },
+    cp: {
+      search: "Cerca clienti…", pick: "Seleziona un cliente", pickDesc: "Scegli un'azienda qui sotto per aprire il portale.",
+      none: "Nessun cliente trovato", docs: "Documenti", missing: "Documenti mancanti", questions: "Domande",
+      deadlines: "Scadenze", allReceived: "Tutti i documenti ricevuti", allReceivedDesc: "Nulla in sospeso al momento.",
+      noQuestions: "Nessuna domanda", noDeadlines: "Nessuna scadenza", answerPh: "Scrivi la tua risposta…",
+      answered: "Risposta inviata", open: "aperte",
     },
   },
 };

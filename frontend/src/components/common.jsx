@@ -111,17 +111,39 @@ export function Loading({ label = "Loading" }) {
   );
 }
 
-export function TableShell({ head, children, testid }) {
+export function Toolbar({ children, className = "" }) {
   return (
-    <Card className="overflow-hidden">
+    <Card className={`p-3 mb-4 flex flex-wrap items-center gap-3 ${className}`}>{children}</Card>
+  );
+}
+
+export function TableShell({ head, children, testid, title, icon: Icon, count, actions }) {
+  return (
+    <Card className="overflow-hidden rounded-lg">
+      {(title || actions) && (
+        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200">
+          <div className="flex items-center gap-2.5">
+            {Icon && (
+              <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center">
+                <Icon className="h-[18px] w-[18px] text-primary" strokeWidth={1.6} />
+              </div>
+            )}
+            {title && <h3 className="font-display font-semibold text-slate-800">{title}</h3>}
+            {count != null && (
+              <span className="text-xs font-medium text-slate-500 bg-slate-100 rounded-full px-2 py-0.5 tabular-nums">{count}</span>
+            )}
+          </div>
+          {actions && <div className="flex items-center gap-2">{actions}</div>}
+        </div>
+      )}
       <div className="overflow-x-auto">
         <table className="w-full text-sm" data-testid={testid}>
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50">
+            <tr className="border-b border-slate-200 bg-slate-50/70">
               {head.map((h, i) => (
                 <th
                   key={i}
-                  className={`px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 ${
+                  className={`px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500 ${
                     h.right ? "text-right" : "text-left"
                   }`}
                 >

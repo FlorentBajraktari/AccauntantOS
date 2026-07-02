@@ -3,7 +3,7 @@ import { Landmark, Upload, Link2, Link2Off, Download, Loader2, CheckCircle2, XCi
 import { toast } from "sonner";
 import { api, downloadFile } from "@/lib/api";
 import { chf, fmtDate } from "@/lib/format";
-import { PageHeader, Card, Loading, EmptyState, StatCard, TableShell, StatusBadge } from "@/components/common";
+import { PageHeader, Card, Loading, EmptyState, StatCard, TableShell, StatusBadge, Toolbar } from "@/components/common";
 import CompanySelect from "@/components/CompanySelect";
 import { useI18n } from "@/i18n/I18nContext";
 import { Button } from "@/components/ui/button";
@@ -64,10 +64,10 @@ export default function BankReconciliation() {
           </>
         }
       />
-      <div className="flex flex-wrap items-center gap-3 mb-4">
+      <Toolbar>
         <CompanySelect value={company} onChange={setCompany} companies={companies} />
         <span className="text-xs text-slate-400">CSV columns supported: date, description, reference, amount</span>
-      </div>
+      </Toolbar>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard label="Matched" value={report.matched_count} icon={CheckCircle2} tone="green" testid="stat-matched" />
@@ -79,7 +79,7 @@ export default function BankReconciliation() {
       {report.transactions.length === 0 ? (
         <Card className="p-6"><EmptyState icon={Landmark} title="No transactions" desc="Import a bank statement CSV to begin reconciliation." /></Card>
       ) : (
-        <TableShell testid="bank-table" head={[
+        <TableShell testid="bank-table" title={t("nav.bank")} icon={Landmark} count={report.transactions.length} head={[
           { label: "Date" }, { label: "Description" }, { label: "Company" }, { label: "Reference" },
           { label: "Amount", right: true }, { label: "Status" }, { label: "", right: true },
         ]}>

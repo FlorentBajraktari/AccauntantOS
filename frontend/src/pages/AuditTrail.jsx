@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { History, ShieldCheck } from "lucide-react";
 import { api } from "@/lib/api";
 import { fmtDateTime } from "@/lib/format";
-import { PageHeader, Card, Loading, EmptyState, TableShell } from "@/components/common";
+import { PageHeader, Card, Loading, EmptyState, TableShell, Toolbar } from "@/components/common";
 import CompanySelect from "@/components/CompanySelect";
 import { useI18n } from "@/i18n/I18nContext";
 
@@ -37,12 +37,12 @@ export default function AuditTrail() {
   return (
     <div>
       <PageHeader title={t("pages.audit.title")} subtitle={t("pages.audit.subtitle")} />
-      <div className="mb-4"><CompanySelect value={company} onChange={setCompany} companies={companies} /></div>
+      <Toolbar><CompanySelect value={company} onChange={setCompany} companies={companies} /></Toolbar>
 
       {logs.length === 0 ? (
         <Card className="p-6"><EmptyState icon={History} title="No activity yet" /></Card>
       ) : (
-        <TableShell testid="audit-table" head={[
+        <TableShell testid="audit-table" title={t("nav.audit")} icon={History} count={logs.length} head={[
           { label: "Time" }, { label: "User" }, { label: "Action" }, { label: "Detail" }, { label: "Company" },
         ]}>
           {logs.map((l) => (

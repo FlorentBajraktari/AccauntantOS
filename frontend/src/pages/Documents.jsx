@@ -3,7 +3,7 @@ import { FileText, Plus, Sparkles, Trash2, Loader2, Filter } from "lucide-react"
 import { toast } from "sonner";
 import { api, formatApiErrorDetail } from "@/lib/api";
 import { chf, fmtDate } from "@/lib/format";
-import { PageHeader, Card, Loading, EmptyState, StatusBadge, TableShell } from "@/components/common";
+import { PageHeader, Card, Loading, EmptyState, StatusBadge, TableShell, Toolbar } from "@/components/common";
 import CompanySelect from "@/components/CompanySelect";
 import { useI18n } from "@/i18n/I18nContext";
 import { Button } from "@/components/ui/button";
@@ -80,21 +80,21 @@ export default function Documents() {
         actions={<Button data-testid="add-document-btn" onClick={() => setOpen(true)}><Plus className="h-4 w-4 mr-1" /> {t("common.add")}</Button>}
       />
 
-      <div className="flex flex-wrap items-center gap-3 mb-4">
+      <Toolbar>
         <CompanySelect value={company} onChange={setCompany} companies={companies} />
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[160px] bg-white" data-testid="status-filter"><Filter className="h-4 w-4 mr-1 text-slate-400" /><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
+            <SelectItem value="all">{t("common.allStatuses")}</SelectItem>
             {STATUSES.map((s) => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}
           </SelectContent>
         </Select>
-      </div>
+      </Toolbar>
 
       {docs.length === 0 ? (
         <Card className="p-6"><EmptyState icon={FileText} title="No documents" desc="Add a document to trigger a review task and AI extraction." /></Card>
       ) : (
-        <TableShell testid="documents-table" head={[
+        <TableShell testid="documents-table" title={t("nav.documents")} icon={FileText} count={docs.length} head={[
           { label: "Document" }, { label: "Company" }, { label: "Category" }, { label: "Date" },
           { label: "Amount", right: true }, { label: "VAT", right: true }, { label: "Status" }, { label: "Actions", right: true },
         ]}>

@@ -3,7 +3,7 @@ import { Plus, Trash2, Download, AlertTriangle, Wallet, Users } from "lucide-rea
 import { toast } from "sonner";
 import { api, formatApiErrorDetail, downloadFile } from "@/lib/api";
 import { chf, fmtDate, daysUntil } from "@/lib/format";
-import { PageHeader, Card, Loading, EmptyState, StatusBadge, StatCard, TableShell } from "@/components/common";
+import { PageHeader, Card, Loading, EmptyState, StatusBadge, StatCard, TableShell, Toolbar } from "@/components/common";
 import CompanySelect from "@/components/CompanySelect";
 import { useI18n } from "@/i18n/I18nContext";
 import { Button } from "@/components/ui/button";
@@ -73,9 +73,9 @@ export default function InvoiceModule({ type, partyField, title, subtitle, excel
         }
       />
 
-      <div className="flex flex-wrap items-center gap-3 mb-4">
+      <Toolbar>
         <CompanySelect value={company} onChange={setCompany} companies={companies} />
-      </div>
+      </Toolbar>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
         <StatCard label={t("invoice.outstanding")} value={chf(a.total)} icon={Wallet} tone="brand" testid="stat-outstanding" />
@@ -91,7 +91,7 @@ export default function InvoiceModule({ type, partyField, title, subtitle, excel
           {report.items.length === 0 ? (
             <Card className="p-6"><EmptyState icon={Wallet} title={t("invoice.noInvoices")} desc="" /></Card>
           ) : (
-            <TableShell testid={`${type}-table`} head={[
+            <TableShell testid={`${type}-table`} title={t(`pages.${type}.title`)} icon={Wallet} count={report.items.length} head={[
               { label: isAP ? "Supplier" : "Customer" }, { label: "Invoice" }, { label: "Company" },
               { label: "Due" }, { label: "Amount", right: true }, { label: "Status" }, { label: "", right: true },
             ]}>

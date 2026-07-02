@@ -3,7 +3,7 @@ import { Receipt, Download, ArrowUpRight, ArrowDownRight, Scale } from "lucide-r
 import { toast } from "sonner";
 import { api, downloadFile } from "@/lib/api";
 import { chf } from "@/lib/format";
-import { PageHeader, Card, Loading, StatCard, StatusBadge, TableShell, EmptyState } from "@/components/common";
+import { PageHeader, Card, Loading, StatCard, StatusBadge, TableShell, EmptyState, Toolbar } from "@/components/common";
 import CompanySelect from "@/components/CompanySelect";
 import { useI18n } from "@/i18n/I18nContext";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ export default function VAT() {
       <PageHeader title={t("pages.vat.title")} subtitle={t("pages.vat.subtitle")}
         actions={<Button variant="outline" data-testid="export-vat-btn" onClick={exportExcel}><Download className="h-4 w-4 mr-1" /> {t("common.export")}</Button>}
       />
-      <div className="flex flex-wrap items-center gap-3 mb-4">
+      <Toolbar>
         <CompanySelect value={company} onChange={setCompany} companies={companies} />
         <div className="flex items-center gap-1.5">
           {data.rates.map((r) => (
@@ -43,7 +43,7 @@ export default function VAT() {
           ))}
           <span className="text-xs text-slate-400 ml-1">standard / reduced / accommodation</span>
         </div>
-      </div>
+      </Toolbar>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard label="Output VAT (Sales)" value={chf(data.output_vat)} icon={ArrowUpRight} tone="brand" testid="stat-output-vat" />

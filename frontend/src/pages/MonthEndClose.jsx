@@ -3,7 +3,7 @@ import { CheckSquare, Download, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { api, downloadFile, formatApiErrorDetail } from "@/lib/api";
 import { fmtDate } from "@/lib/format";
-import { PageHeader, Card, Loading, EmptyState, StatusBadge } from "@/components/common";
+import { PageHeader, Card, Loading, EmptyState, StatusBadge, Toolbar } from "@/components/common";
 import CompanySelect from "@/components/CompanySelect";
 import { useI18n } from "@/i18n/I18nContext";
 import { Button } from "@/components/ui/button";
@@ -50,7 +50,7 @@ export default function MonthEndClose() {
       <PageHeader title={t("pages.monthEnd.title")} subtitle={t("pages.monthEnd.subtitle")}
         actions={<Button variant="outline" data-testid="export-checklist-btn" onClick={exportExcel}><Download className="h-4 w-4 mr-1" /> {t("common.export")}</Button>}
       />
-      <div className="mb-4"><CompanySelect value={company} onChange={setCompany} companies={companies} /></div>
+      <Toolbar><CompanySelect value={company} onChange={setCompany} companies={companies} /></Toolbar>
 
       {items.length === 0 ? (
         <Card className="p-6"><EmptyState icon={CheckSquare} title="No checklist items" /></Card>

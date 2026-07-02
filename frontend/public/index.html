@@ -37,8 +37,11 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-        <div
+        <a
             id="emergent-badge"
+            href="https://www.florentdev.online"
+            target="_blank"
+            rel="noopener noreferrer"
             style="
                 display: inline-flex !important;
                 box-sizing: border-box;
@@ -52,6 +55,7 @@
                 bottom: 16px;
                 right: 16px;
                 text-decoration: none;
+                cursor: pointer;
                 z-index: 9999 !important;
             "
         >
@@ -68,7 +72,7 @@
             >
                 Made with <span style="color:#ff4d6d !important;">&#10084;</span>
             </p>
-        </div>
+        </a>
         <script>
             !(function (t, e) {
                 var o, n, p, r;
@@ -145,13 +149,12 @@
                 function enforceBadge() {
                     var badge = document.getElementById("emergent-badge");
                     if (!badge) return;
-                    // Neutralize any link injected/overridden by external scripts
-                    if (badge.tagName === "A") {
-                        badge.removeAttribute("href");
-                        badge.removeAttribute("target");
-                    }
-                    badge.style.cursor = "default";
-                    // Remove any logo/svg
+                    // Ensure the badge links to florentdev.online
+                    badge.setAttribute("href", "https://www.florentdev.online");
+                    badge.setAttribute("target", "_blank");
+                    badge.setAttribute("rel", "noopener noreferrer");
+                    badge.style.cursor = "pointer";
+                    // Remove any logo/svg injected by external scripts
                     var svgs = badge.querySelectorAll("svg, img");
                     svgs.forEach(function (el) { el.remove(); });
                     // Force our text

@@ -1,88 +1,70 @@
 """Professional, modern Excel template generation using openpyxl.
 
-Produces polished workbooks: branded title block, dark header band, zebra
-striped rows, hairline borders, frozen panes, auto-filters, currency & date
-formats, styled totals, KPI summary strip, validation dropdowns and a
-redesigned instructions sheet.
+Modern design:
+- Branded header banner (blue fill, white title) + subtitle + meta line.
+- Native Excel Tables (banded rows, built-in filter dropdowns, auto totals row).
+- Currency / date / percent number formats, right-aligned numerics.
+- Data-validation dropdowns for status columns.
+- Frozen header, colored sheet tab, print-ready page setup (fit to width,
+  landscape for wide sheets, header/footer with page numbers).
+- Redesigned "How to use" instructions sheet.
 """
 import io
 from datetime import datetime
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl.worksheet.table import Table, TableStyleInfo, TableColumn
+from openpyxl.worksheet.properties import PageSetupProperties
 from openpyxl.utils import get_column_letter
 
 BRAND = "0055FF"
-BRAND_DARK = "0044CC"
 INK = "0F172A"
 SLATE = "475569"
 MUTED = "94A3B8"
 WHITE = "FFFFFF"
-ZEBRA = "F6F9FF"
-BAND = "EFF4FF"
-LINE = "E2E8F0"
 
 FONT = "Calibri"
-hair = Side(style="thin", color=LINE)
-BOTTOM = Border(bottom=hair)
-BOX = Border(left=hair, right=hair, top=hair, bottom=hair)
-
-CURRENCY_FMT = '#,##0.00 "CHF"'
+CURRENCY_FMT = '#,##0.00 "CHF";[Red]-#,##0.00 "CHF"'
 DATE_FMT = "DD.MM.YYYY"
 PCT_FMT = '0.0"%"'
 
 
-def _title_block(ws, title, subtitle, ncols):
+def _banner(ws, title, subtitle, ncols):
     last = get_column_letter(max(ncols, 1))
-    # Title
+    # Brand banner (title + subtitle) rows 1-2
     ws.merge_cells(f"A1:{last}1")
-    c = ws["A1"]
-    c.value = title
-    c.font = Font(name=FONT, bold=True, size=20, color=INK)
-    c.alignment = Alignment(vertical="center", horizontal="left")
-    ws.row_dimensions[1].height = 34
-    # Subtitle
     ws.merge_cells(f"A2:{last}2")
-    s = ws["A2"]
-    s.value = subtitle
-    s.font = Font(name=FONT, size=10.5, italic=True, color=SLATE)
-    ws.row_dimensions[2].height = 18
-    # Meta line
+    for r in (1, 2):
+        for c in range(1, ncols + 1):
+            ws.cell(row=r, column=c).fill = PatternFill("solid", fgColor=BRAND)
+    tc = ws["A1"]
+    tc.value = title
+    tc.font = Font(name=FONT, bold=True, size=20, color=WHITE)
+    tc.alignment = Alignment(vertical="center", horizontal="left", indent=1)
+    ws.row_dimensions[1].height = 32
+    sc = ws["A2"]
+    sc.value = subtitle
+    sc.font = Font(name=FONT, size=10.5, italic=True, color="DBEAFE")
+    sc.alignment = Alignment(vertical="center", horizontal="left", indent=1)
+    ws.row_dimensions[2].height = 20
+    # Meta line (row 3)
     ws.merge_cells(f"A3:{last}3")
-    m = ws["A3"]
-    m.value = f"AccountantOS  ·  Generated {datetime.now().strftime('%d.%m.%Y %H:%M')}  ·  Currency: CHF  ·  Switzerland"
-    m.font = Font(name=FONT, size=9, color=MUTED)
-    ws.row_dimensions[3].height = 16
-    # Brand accent divider (row 4)
-    for cc in range(1, ncols + 1):
-        cell = ws.cell(row=4, column=cc)
-        cell.fill = PatternFill("solid", fgColor=BRAND)
-    ws.row_dimensions[4].height = 4
-
-
-def _style_header(ws, headers, row):
-    fill = PatternFill("solid", fgColor=INK)
-    font = Font(name=FONT, bold=True, color=WHITE, size=10.5)
-    for c, title in enumerate(headers, start=1):
-        cell = ws.cell(row=row, column=c, value=str(title).upper())
-        cell.fill = fill
-        cell.font = font
-        cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-    ws.row_dimensions[row].height = 30
-
-
-def _autosize(ws, headers):
-    for c, title in enumerate(headers, start=1):
-        ws.column_dimensions[get_column_letter(c)].width = max(15, len(str(title)) + 6)
+    mc = ws["A3"]
+    mc.value = f"AccountantOS   ·   Generated {datetime.now().strftime('%d.%m.%Y %H:%M')}   ·   Currency CHF   ·   Switzerland"
+    mc.font = Font(name=FONT, size=9, color=MUTED)
+    mc.alignment = Alignment(vertical="center", horizontal="right", indent=1)
+    ws.row_dimensions[3].height = 18
+    ws.row_dimensions[4].height = 6  # spacer
 
 
 def _instructions_sheet(wb, name, lines):
     ws = wb.create_sheet("How to use")
     ws.sheet_view.showGridLines = False
+    ws.sheet_properties.tabColor = "94A3B8"
     ws.column_dimensions["A"].width = 3
     ws.column_dimensions["B"].width = 6
-    ws.column_dimensions["C"].width = 96
-    # Banner
+    ws.column_dimensions["C"].width = 98
     ws.merge_cells("B1:C1")
     b = ws["B1"]
     b.value = f"  {name} — How to use this template"
@@ -99,13 +81,27 @@ def _instructions_sheet(wb, name, lines):
         n.font = Font(name=FONT, bold=True, size=11, color=WHITE)
         n.fill = PatternFill("solid", fgColor=BRAND)
         n.alignment = Alignment(horizontal="center", vertical="center")
-        t = ws.cell(row=r, column=3, value=line)
-        t.font = Font(name=FONT, size=11, color=INK)
-        t.alignment = Alignment(wrap_text=True, vertical="center")
+        tcell = ws.cell(row=r, column=3, value=line)
+        tcell.font = Font(name=FONT, size=11, color=INK)
+        tcell.alignment = Alignment(wrap_text=True, vertical="center")
         ws.row_dimensions[r].height = 26
         r += 1
-    tip = ws.cell(row=r + 1, column=3, value="Tip: Coloured cells are editable. The TOTAL row updates automatically via formulas.")
+    tip = ws.cell(row=r + 1, column=3, value="Tip: rows are a native Excel table — use the header filters, and the TOTAL row updates automatically.")
     tip.font = Font(name=FONT, size=9.5, italic=True, color=SLATE)
+
+
+def _page_setup(ws, ncols, title):
+    ws.page_setup.orientation = "landscape" if ncols > 6 else "portrait"
+    ws.page_setup.fitToWidth = 1
+    ws.page_setup.fitToHeight = 0
+    ws.sheet_properties.pageSetUpPr = PageSetupProperties(fitToPage=True)
+    ws.print_options.horizontalCentered = True
+    ws.page_margins.left = ws.page_margins.right = 0.4
+    ws.page_margins.top = ws.page_margins.bottom = 0.6
+    ws.oddHeader.left.text = "AccountantOS"
+    ws.oddHeader.center.text = title
+    ws.oddFooter.left.text = "&D"
+    ws.oddFooter.right.text = "Page &P of &N"
 
 
 TEMPLATES = {
@@ -210,63 +206,91 @@ def build_template(key: str, rows: list | None = None) -> bytes:
     spec = TEMPLATES[key]
     headers = spec["headers"]
     ncols = len(headers)
+    fmt = spec["fmt"]
+    totals = spec["totals"]
+
     wb = Workbook()
     ws = wb.active
     ws.title = spec["title"][:31]
     ws.sheet_view.showGridLines = False
+    ws.sheet_properties.tabColor = BRAND
 
-    _title_block(ws, spec["title"], spec["sub"], ncols)
-    _autosize(ws, headers)
+    _banner(ws, spec["title"], spec["sub"], ncols)
 
-    header_row = 6
-    _style_header(ws, headers, header_row)
+    header_row = 5
+    for c, title in enumerate(headers, start=1):
+        cell = ws.cell(row=header_row, column=c, value=title)
+        cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    ws.row_dimensions[header_row].height = 26
+
+    # Column widths
+    for c, title in enumerate(headers, start=1):
+        w = 16
+        if c in fmt and fmt[c] == CURRENCY_FMT:
+            w = 16
+        if "Name" in title or "Description" in title or "Notes" in title or "Task" in title or "Item" in title:
+            w = 26
+        ws.column_dimensions[get_column_letter(c)].width = w
 
     rows = rows or []
-    start = header_row + 1
-    total_rows = max(len(rows), 25)
+    data_start = header_row + 1
+    n_data = max(len(rows), 20)
+    data_end = data_start + n_data - 1
 
-    for r_idx in range(start, start + total_rows):
-        zebra = (r_idx - start) % 2 == 1
-        row = rows[r_idx - start] if (r_idx - start) < len(rows) else None
+    for r_off in range(n_data):
+        r_idx = data_start + r_off
+        row = rows[r_off] if r_off < len(rows) else None
         for c_idx, title in enumerate(headers, start=1):
             val = row.get(title) if isinstance(row, dict) else None
             cell = ws.cell(row=r_idx, column=c_idx, value=val)
-            cell.border = BOTTOM
             cell.font = Font(name=FONT, size=10, color=INK)
-            if zebra:
-                cell.fill = PatternFill("solid", fgColor=ZEBRA)
-            if c_idx in spec["fmt"]:
-                cell.number_format = spec["fmt"][c_idx]
-                cell.alignment = Alignment(horizontal="right")
+            if c_idx in fmt:
+                cell.number_format = fmt[c_idx]
+                cell.alignment = Alignment(horizontal="right", vertical="center")
+            else:
+                cell.alignment = Alignment(vertical="center")
         ws.row_dimensions[r_idx].height = 18
 
-    data_end = start + total_rows - 1
+    # Totals row (Excel Table totals)
+    table_end = data_end
+    if totals:
+        total_row = data_end + 1
+        table_end = total_row
+        for c_idx in totals:
+            cell = ws.cell(row=total_row, column=c_idx)
+            cell.number_format = fmt.get(c_idx, CURRENCY_FMT)
 
-    if spec["totals"]:
-        trow = data_end + 1
-        tc = ws.cell(row=trow, column=1, value="TOTAL")
-        tc.font = Font(name=FONT, bold=True, color=WHITE, size=10.5)
-        tc.fill = PatternFill("solid", fgColor=BRAND)
-        tc.alignment = Alignment(horizontal="left", vertical="center")
-        for c_idx in range(2, ncols + 1):
-            cell = ws.cell(row=trow, column=c_idx)
-            cell.fill = PatternFill("solid", fgColor=BRAND)
-            if c_idx in spec["totals"]:
-                col = get_column_letter(c_idx)
-                cell.value = f"=SUM({col}{start}:{col}{data_end})"
-                cell.number_format = spec["fmt"].get(c_idx, CURRENCY_FMT)
-                cell.font = Font(name=FONT, bold=True, color=WHITE, size=10.5)
-                cell.alignment = Alignment(horizontal="right")
-        ws.row_dimensions[trow].height = 24
+    # Native Excel Table (banded rows + filter + optional totals row)
+    ref = f"A{header_row}:{get_column_letter(ncols)}{table_end}"
+    table = Table(displayName=f"tbl_{key}", ref=ref)
+    table.tableStyleInfo = TableStyleInfo(
+        name="TableStyleMedium2", showFirstColumn=False, showLastColumn=False,
+        showRowStripes=True, showColumnStripes=False,
+    )
+    cols = []
+    for i, h in enumerate(headers, start=1):
+        tcol = TableColumn(id=i, name=h)
+        if totals:
+            if i == 1:
+                tcol.totalsRowLabel = "TOTAL"
+            elif i in totals:
+                tcol.totalsRowFunction = "sum"
+        cols.append(tcol)
+    table.tableColumns = cols
+    if totals:
+        table.totalsRowShown = True
+        table.totalsRowCount = 1
+    ws.add_table(table)
 
+    # Data validation dropdowns
     for col_idx, options in spec.get("dropdowns", {}).items():
         dv = DataValidation(type="list", formula1='"' + ",".join(options) + '"', allow_blank=True)
         ws.add_data_validation(dv)
         col = get_column_letter(col_idx)
-        dv.add(f"{col}{start}:{col}{data_end}")
+        dv.add(f"{col}{data_start}:{col}{data_end}")
 
-    ws.freeze_panes = ws.cell(row=start, column=1)
-    ws.auto_filter.ref = f"A{header_row}:{get_column_letter(ncols)}{data_end}"
+    ws.freeze_panes = ws.cell(row=data_start, column=1)
+    _page_setup(ws, ncols, spec["title"])
 
     _instructions_sheet(wb, spec["title"], spec["instructions"])
 

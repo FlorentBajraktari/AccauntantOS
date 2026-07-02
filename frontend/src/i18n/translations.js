@@ -63,6 +63,15 @@ export const translations = {
       outstanding: "Outstanding", current: "Current", addInvoice: "Add Invoice", exportAging: "Export Aging",
       supplierBalances: "Supplier Balances", customerBalances: "Customer Balances", noInvoices: "No invoices",
     },
+    excel: {
+      templates: "templates", features: "Styled · frozen panes · filters · instructions",
+      search: "Search templates…", noResults: "No templates found",
+      helperSelect: "Select a company to auto-fill data-backed templates (AP/AR, VAT, Bank, P&L…).",
+      helperCompany: "Data-backed templates auto-fill with the selected company's records.",
+      generating: "Generating…", downloaded: "Downloaded", failed: "Export failed",
+      cats: { "Financial Statements": "Financial Statements", "Ledgers & Accounts": "Ledgers & Accounts",
+        "Payables & Receivables": "Payables & Receivables", "VAT & Bank": "VAT & Bank", "Operations": "Operations" },
+    },
   },
 
   de: {
@@ -118,6 +127,15 @@ export const translations = {
     invoice: {
       outstanding: "Ausstehend", current: "Aktuell", addInvoice: "Rechnung hinzufügen", exportAging: "Fälligkeiten exportieren",
       supplierBalances: "Lieferantensalden", customerBalances: "Kundensalden", noInvoices: "Keine Rechnungen",
+    },
+    excel: {
+      templates: "Vorlagen", features: "Formatiert · fixierte Fenster · Filter · Anleitung",
+      search: "Vorlagen suchen…", noResults: "Keine Vorlagen gefunden",
+      helperSelect: "Wählen Sie eine Firma, um datenbasierte Vorlagen automatisch zu füllen (Kreditoren/Debitoren, MWST, Bank, GuV…).",
+      helperCompany: "Datenbasierte Vorlagen werden mit den Daten der gewählten Firma gefüllt.",
+      generating: "Wird erstellt…", downloaded: "Heruntergeladen", failed: "Export fehlgeschlagen",
+      cats: { "Financial Statements": "Abschlüsse", "Ledgers & Accounts": "Konten & Journale",
+        "Payables & Receivables": "Kreditoren & Debitoren", "VAT & Bank": "MWST & Bank", "Operations": "Betrieb" },
     },
   },
 
@@ -175,6 +193,15 @@ export const translations = {
       outstanding: "En cours", current: "Actuel", addInvoice: "Ajouter une facture", exportAging: "Exporter l'ancienneté",
       supplierBalances: "Soldes fournisseurs", customerBalances: "Soldes clients", noInvoices: "Aucune facture",
     },
+    excel: {
+      templates: "modèles", features: "Stylisé · volets figés · filtres · instructions",
+      search: "Rechercher des modèles…", noResults: "Aucun modèle trouvé",
+      helperSelect: "Sélectionnez une entreprise pour préremplir les modèles basés sur les données (fournisseurs/clients, TVA, banque, résultat…).",
+      helperCompany: "Les modèles basés sur les données sont préremplis avec l'entreprise sélectionnée.",
+      generating: "Génération…", downloaded: "Téléchargé", failed: "Échec de l'export",
+      cats: { "Financial Statements": "États financiers", "Ledgers & Accounts": "Comptes & journaux",
+        "Payables & Receivables": "Fournisseurs & clients", "VAT & Bank": "TVA & banque", "Operations": "Opérations" },
+    },
   },
 
   it: {
@@ -230,6 +257,15 @@ export const translations = {
     invoice: {
       outstanding: "In essere", current: "Corrente", addInvoice: "Aggiungi fattura", exportAging: "Esporta scadenzario",
       supplierBalances: "Saldi fornitori", customerBalances: "Saldi clienti", noInvoices: "Nessuna fattura",
+    },
+    excel: {
+      templates: "modelli", features: "Formattato · riquadri bloccati · filtri · istruzioni",
+      search: "Cerca modelli…", noResults: "Nessun modello trovato",
+      helperSelect: "Seleziona un'azienda per precompilare i modelli basati sui dati (fornitori/clienti, IVA, banca, conto economico…).",
+      helperCompany: "I modelli basati sui dati vengono precompilati con l'azienda selezionata.",
+      generating: "Generazione…", downloaded: "Scaricato", failed: "Esportazione fallita",
+      cats: { "Financial Statements": "Bilanci", "Ledgers & Accounts": "Conti & registri",
+        "Payables & Receivables": "Fornitori & clienti", "VAT & Bank": "IVA & banca", "Operations": "Operazioni" },
     },
   },
 };

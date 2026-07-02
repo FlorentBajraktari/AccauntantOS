@@ -42,7 +42,7 @@ export default function ExcelCenter() {
   const download = (key, title) => {
     const q = company !== "all" ? `?company_id=${company}` : "";
     toast.promise(downloadFile(`/excel/download/${key}${q}`, `${key}.xlsx`),
-      { loading: `Generating ${title}…`, success: `${title} downloaded`, error: "Export failed" });
+      { loading: t("excel.generating"), success: t("excel.downloaded"), error: t("excel.failed") });
   };
 
   const grouped = useMemo(() => {
@@ -74,14 +74,14 @@ export default function ExcelCenter() {
               <FileSpreadsheet className="h-5 w-5 text-primary" strokeWidth={1.6} />
             </div>
             <div>
-              <p className="font-semibold text-slate-800">{templates.length} templates</p>
-              <p className="text-xs text-slate-400">Styled · frozen panes · filters · instructions</p>
+              <p className="font-semibold text-slate-800">{templates.length} {t("excel.templates")}</p>
+              <p className="text-xs text-slate-400">{t("excel.features")}</p>
             </div>
           </div>
           <div className="relative flex-1 max-w-sm lg:ml-4">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input data-testid="excel-search" value={query} onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search templates…" className="pl-9 h-9 bg-slate-50 border-slate-200" />
+              placeholder={t("excel.search")} className="pl-9 h-9 bg-slate-50 border-slate-200" />
           </div>
           <div className="lg:ml-auto flex items-center gap-2">
             <CompanySelect value={company} onChange={setCompany} companies={companies} />
@@ -89,14 +89,12 @@ export default function ExcelCenter() {
         </div>
         <div className="mt-3 flex items-center gap-1.5 text-xs text-slate-400">
           <Sparkles className="h-3.5 w-3.5 text-primary" />
-          {selectedCompany
-            ? `Data-backed templates will auto-fill with ${selectedCompany.name}'s records.`
-            : "Select a company to auto-fill data-backed templates (AP/AR, VAT, Bank, P&L…)."}
+          {selectedCompany ? t("excel.helperCompany") : t("excel.helperSelect")}
         </div>
       </Card>
 
       {cats.length === 0 ? (
-        <Card className="p-6"><EmptyState icon={FileSpreadsheet} title="No templates found" desc="Try a different search term." /></Card>
+        <Card className="p-6"><EmptyState icon={FileSpreadsheet} title={t("excel.noResults")} desc="" /></Card>
       ) : (
         <div className="space-y-8">
           {cats.map((cat) => {
@@ -108,7 +106,7 @@ export default function ExcelCenter() {
                   <div className={`h-8 w-8 rounded-md flex items-center justify-center ${meta.tone}`}>
                     <CatIcon className="h-[18px] w-[18px]" strokeWidth={1.6} />
                   </div>
-                  <h3 className="font-display font-semibold text-slate-800">{cat}</h3>
+                  <h3 className="font-display font-semibold text-slate-800">{t(`excel.cats.${cat}`)}</h3>
                   <span className="text-xs text-slate-400 bg-slate-100 rounded-full px-2 py-0.5">{grouped[cat].length}</span>
                   <div className="flex-1 h-px bg-slate-200 ml-2" />
                 </div>

@@ -1,0 +1,118 @@
+{
+  "theme": "Light",
+  "archetype": "4 (Swiss & High-Contrast)",
+  "emotional_tone": "Authority, Clarity, Trust, Precision",
+  "typography": {
+    "heading_font": "Chivo",
+    "body_font": "IBM Plex Sans",
+    "monospace_font": "IBM Plex Mono",
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl font-bold tracking-tight text-slate-900",
+      "h2": "text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900",
+      "h3": "text-xl font-medium tracking-tight text-slate-800",
+      "h4": "text-lg font-medium tracking-tight text-slate-800",
+      "body": "text-sm text-slate-600 leading-relaxed",
+      "table_header": "text-xs font-semibold tracking-[0.05em] uppercase text-slate-500",
+      "table_data": "text-sm text-slate-700 tabular-nums"
+    }
+  },
+  "colors": {
+    "background": {
+      "primary": "#FFFFFF",
+      "secondary": "#F8FAFC",
+      "tertiary": "#F1F5F9"
+    },
+    "text": {
+      "primary": "#0F172A",
+      "secondary": "#475569",
+      "tertiary": "#94A3B8",
+      "on_brand": "#FFFFFF"
+    },
+    "brand": {
+      "primary": "#0055FF",
+      "hover": "#0044CC",
+      "muted": "#EFF6FF"
+    },
+    "status": {
+      "success": {
+        "text": "#059669",
+        "bg": "#D1FAE5",
+        "border": "#34D399"
+      },
+      "warning": {
+        "text": "#D97706",
+        "bg": "#FEF3C7",
+        "border": "#FBBF24"
+      },
+      "error": {
+        "text": "#DC2626",
+        "bg": "#FEE2E2",
+        "border": "#F87171"
+      },
+      "info": {
+        "text": "#2563EB",
+        "bg": "#DBEAFE",
+        "border": "#60A5FA"
+      }
+    },
+    "borders": "#E2E8F0"
+  },
+  "layout_and_spacing": {
+    "philosophy": "Strict grid hierarchy, dense and compact spacing for data visibility. 'Control Room' protocol.",
+    "container_padding": "p-6 sm:p-8",
+    "grid_system": {
+      "dashboard": "grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6"
+    },
+    "radius": "rounded-md",
+    "shadows": {
+      "card": "shadow-sm",
+      "dropdown": "shadow-lg border border-slate-200"
+    }
+  },
+  "component_guidelines": {
+    "buttons": "Solid brand color for primary, flat borders for secondary. Sharp corners (rounded-md). Always define hover states (darker brand or slate-100 for secondary).",
+    "cards": "Flat background, 1px subtle border (border-slate-200), minimal shadow. No glassmorphism. 'Technical/Grid' look.",
+    "tables": "High density, cardless or bordered-collapse styling. Sticky headers. Tabular-nums for financial data. Functional color coding only (red for overdue, green for cleared). Include explicit data-testid attributes for rows and actions.",
+    "navigation": "Sidebar with secondary background (#F8FAFC). High contrast active state (Brand blue text and left border indicator). Topbar for global search and profile.",
+    "charts": "Recharts or Shadcn charts. Interactive tooltips. Max 3-5 variables per chart to prevent clutter. Keep colors functional.",
+    "modals_dialogs": "Use Shadcn Dialog. Strict max-width (max-w-2xl for complex forms). Backdrop blur sm with dark overlay.",
+    "empty_states": "Minimalist. Muted icon + simple text + primary CTA if applicable.",
+    "forms": "Use Shadcn form components. Group inputs logically. Use structured grids for dense forms."
+  },
+  "motion_and_interaction": {
+    "hover_states": "Required on all interactive elements. Buttons lift slightly (-translate-y-[1px]) with shadow-sm transition.",
+    "transitions": "Fast and crisp. transition-all duration-200 ease-in-out.",
+    "loading": "Skeleton loaders for data tables. No full-page spinners if possible."
+  },
+  "icons_and_assets": {
+    "icon_library": "lucide-react",
+    "icon_style": "Sharp, clean, 1.5px stroke width."
+  },
+  "images": {
+    "login_background": {
+      "url": "https://images.unsplash.com/photo-1462556791646-c201b8241a94",
+      "description": "Abstract modern corporate architecture background for authentication screens",
+      "usage": "Use as a full-bleed side image on the login/signup page."
+    },
+    "user_profile": {
+      "url": "https://images.pexels.com/photos/8297076/pexels-photo-8297076.jpeg",
+      "description": "Professional accountant profile image",
+      "usage": "Use in the topbar profile dropdown, settings, or client portal contacts."
+    }
+  },
+  "accessibility_and_testing": {
+    "contrast": "Ensure text meets APCA/WCAG AA standards. Pay attention to status badges.",
+    "testing": "All interactive and key informational elements MUST include a data-testid attribute in kebab-case."
+  },
+  "instructions_to_main_agent": [
+    "Ensure 'Chivo' (headings) and 'IBM Plex Sans' (body) are imported via Google Fonts.",
+    "Build the dashboard using the 'Control Room' grid philosophy (grid-cols-4, dense).",
+    "Implement the 'North Star' metric pattern for Cash Balance in the top-left of the Dashboard.",
+    "Use Shadcn UI extensively but override default border-radius to `rounded-md` and shadow to `shadow-sm` for a tighter, more professional look.",
+    "Implement responsive data tables with tabular-nums for all financial figures.",
+    "Format currency properly (Switzerland/CHF defaults).",
+    "Use explicitly defined hover states and transition classes.",
+    "Add data-testid attributes to ALL buttons, inputs, tabs, and table rows. E.g., data-testid='save-company-btn'.",
+    "Do not use placeholder text for any images. Use the URLs provided in the images section."
+  ]
+}

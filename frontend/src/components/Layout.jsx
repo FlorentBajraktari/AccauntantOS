@@ -42,7 +42,7 @@ function GlobalSearch() {
         const { data } = await api.get(`/search?q=${encodeURIComponent(q)}`);
         setResults(data.results);
         setOpen(true);
-      } catch (e) {}
+      } catch (e) { }
     }, 250);
     return () => clearTimeout(t);
   }, [q]);
@@ -97,6 +97,9 @@ export default function Layout() {
   const { user, logout } = useAuth();
   const { t } = useI18n();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const navItems = user?.role === "client"
+    ? NAV.filter((item) => item.to === "/portal")
+    : NAV;
 
   const sidebar = (
     <div className="flex flex-col h-full">
@@ -110,17 +113,16 @@ export default function Layout() {
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
-        {NAV.map((item) => (
+        {navItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             onClick={() => setMobileOpen(false)}
             data-testid={`nav-${item.key}`}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                isActive
-                  ? "bg-primary/10 text-primary border-l-2 border-primary"
-                  : "text-slate-600 hover:bg-slate-100 border-l-2 border-transparent"
+              `flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${isActive
+                ? "bg-primary/10 text-primary border-l-2 border-primary"
+                : "text-slate-600 hover:bg-slate-100 border-l-2 border-transparent"
               }`
             }
           >

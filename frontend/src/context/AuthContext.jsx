@@ -34,16 +34,33 @@ export function AuthProvider({ children }) {
     return data;
   };
 
+  const registerWithInvite = async (name, email, password, inviteToken) => {
+    const { data } = await api.post("/auth/register", { name, email, password, invite_token: inviteToken || null });
+    if (data.token) localStorage.setItem(TOKEN_KEY, data.token);
+    setUser(data);
+    return data;
+  };
+
+  const requestPasswordReset = async (email) => {
+    const { data } = await api.post("/auth/password-reset/request", { email });
+    return data;
+  };
+
+  const confirmPasswordReset = async (token, password) => {
+    const { data } = await api.post("/auth/password-reset/confirm", { token, password });
+    return data;
+  };
+
   const logout = async () => {
     try {
       await api.post("/auth/logout");
-    } catch (e) {}
+    } catch (e) { }
     localStorage.removeItem(TOKEN_KEY);
     setUser(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, formatApiErrorDetail }}>
+    <AuthContext.Provider value={{ user, loading, login, register, registerWithInvite, requestPasswordReset, confirmPasswordReset, logout, formatApiErrorDetail }}>
       {children}
     </AuthContext.Provider>
   );

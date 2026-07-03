@@ -23,6 +23,10 @@ Copy the example files and adjust values as needed.
 - `frontend/.env.example` -> `frontend/.env`
 
 The backend listen address is configured in `backend/.env` with `BACKEND_HOST` and `BACKEND_PORT`.
+Use a `JWT_SECRET` that is at least 32 bytes long. If `backend/.env` keeps `JWT_SECRET=GENERATE_LOCAL_SECRET` or the value is too short, the backend will generate a machine-local 64-hex-character secret on startup and persist it into `backend/.env`.
+
+Production should set `APP_ENV=production` and then provide a real `JWT_SECRET` plus explicit `CORS_ORIGINS`. In production mode, self-registration is disabled by default, demo data seeding is disabled by default, admin passwords are not reset on startup unless explicitly enabled, and auth cookies are marked `secure`.
+Set `ADMIN_PASSWORD` to a real secret before any production startup. The example file intentionally uses `CHANGE_ME`, and production mode will refuse to boot with that placeholder or any password shorter than 12 characters.
 
 ## Backend Setup
 
@@ -55,6 +59,13 @@ From the repository root, run:
 ```
 
 The helper reads `BACKEND_HOST` and `BACKEND_PORT` from `backend/.env`, starts the backend with those values, and points the frontend at that backend in a separate PowerShell window.
+
+## Production Operations
+
+- Use `APP_ENV=production` with explicit `JWT_SECRET`, `ADMIN_PASSWORD`, `CORS_ORIGINS`, and `DEFAULT_TENANT_ID` values.
+- Health endpoints are available at `/api/health/live` and `/api/health/ready`.
+- See `PRODUCTION_CHECKLIST.md` for deployment hardening, backups, monitoring, and go-live steps.
+- Use `backup-mongodb.ps1` as a scheduled MongoDB dump/export helper on Windows hosts.
 
 ## Tests
 

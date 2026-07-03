@@ -30,9 +30,10 @@ function Protected({ children }) {
 
 function AppRoutes() {
   const { user, loading } = useAuth();
+  const homePath = user?.role === "client" ? "/portal" : "/dashboard";
   return (
     <Routes>
-      <Route path="/login" element={user && !loading ? <Navigate to="/dashboard" replace /> : <Login />} />
+      <Route path="/login" element={user && !loading ? <Navigate to={homePath} replace /> : <Login />} />
       <Route element={<Protected><Layout /></Protected>}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/companies" element={<Companies />} />
@@ -50,7 +51,7 @@ function AppRoutes() {
         <Route path="/audit" element={<AuditTrail />} />
         <Route path="/settings" element={<Settings />} />
       </Route>
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<Navigate to={homePath} replace />} />
     </Routes>
   );
 }

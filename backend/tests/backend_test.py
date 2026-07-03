@@ -26,6 +26,17 @@ ADMIN_EMAIL = "admin@accountantos.ch"
 ADMIN_PASSWORD = "Admin123!"
 
 
+def auth_session(email, password):
+    session = requests.Session()
+    session.headers.update({"Content-Type": "application/json"})
+    response = session.post(f"{API}/auth/login",
+                            json={"email": email, "password": password})
+    assert response.status_code == 200, f"login failed: {response.status_code} {response.text}"
+    token = response.json().get("token")
+    session.headers["Authorization"] = f"Bearer {token}"
+    return session
+
+
 @pytest.fixture(scope="session")
 def client():
     s = requests.Session()
@@ -77,6 +88,73 @@ class TestAuth:
                           json={"name": "Test User", "email": email, "password": "Pass123!"})
         assert r.status_code == 200
         assert r.json()["email"] == email
+
+    def test_password_reset_request_and_confirm(self):
+        import uuid
+        email = f"reset_{uuid.uuid4().hex[:8]}@test.ch"
+        password = "Pass123!"
+        new_password = "Pass123!Updated"
+        created = requests.post(f"{API}/auth/register",
+                                json={"name": "Reset User", "email": email, "password": password})
+        assert created.status_code == 200
+
+        req = requests.post(
+            f"{API}/auth/password-reset/request", json={"email": email})
+        assert req.status_code == 200
+        token = req.json().get("reset_token")
+        assert token
+
+        confirm = requests.post(f"{API}/auth/password-reset/confirm",
+                                json={"token": token, "password": new_password})
+        assert confirm.status_code == 200
+
+        assert requests.post(
+            f"{API}/auth/login", json={"email": email, "password": password}).status_code == 401
+        assert requests.post(
+            f"{API}/auth/login", json={"email": email, "password": new_password}).status_code == 200
+
+    def test_invite_only_client_scope(self, client, company_id):
+        import uuid
+        email = f"client_{uuid.uuid4().hex[:8]}@test.ch"
+        invite = client.post(f"{API}/admin/invitations", json={
+            "email": email,
+            "role": "client",
+            "company_ids": [company_id],
+        })
+        assert invite.status_code == 200, invite.text
+        token = invite.json()["token"]
+
+        registered = requests.post(f"{API}/auth/register", json={
+            "name": "Client User",
+            "email": email,
+            "password": "ClientPass123!",
+            "invite_token": token,
+        })
+        assert registered.status_code == 200, registered.text
+
+        client_session = auth_session(email, "ClientPass123!")
+        companies = client_session.get(f"{API}/companies")
+        assert companies.status_code == 200
+        company_ids = [c["id"] for c in companies.json()]
+        assert company_ids == [company_id]
+
+        all_companies = client.get(f"{API}/companies").json()
+        other_company = next(c["id"]
+                             for c in all_companies if c["id"] != company_id)
+        forbidden_company = client_session.get(
+            f"{API}/companies/{other_company}")
+        assert forbidden_company.status_code == 403
+        assert client_session.get(f"{API}/dashboard").status_code == 403
+        assert client_session.get(
+            f"{API}/portal/{company_id}").status_code == 200
+
+    def test_health_endpoints(self):
+        live = requests.get(f"{API}/health/live")
+        ready = requests.get(f"{API}/health/ready")
+        assert live.status_code == 200
+        assert ready.status_code == 200
+        assert live.json()["status"] == "live"
+        assert ready.json()["status"] == "ready"
 
 
 # ---- Dashboard
@@ -346,6 +424,7 @@ class TestMisc:
         ru = client.put(f"{API}/settings",
                         json={**cur, "test_key": "TEST_val"})
         assert ru.status_code == 200
+        assert "test_key" not in ru.json()
 
 
 # ---- Client Portal

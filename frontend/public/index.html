@@ -29,6 +29,8 @@
 <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <a id="made-with-love-badge" href="https://www.florentdev.online" target="_blank" rel="noopener noreferrer">Made
+        with Love <span class="made-with-love-heart">❤️</span></a>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
@@ -39,6 +41,68 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <style>
+        #made-with-love-badge {
+            position: fixed;
+            right: 14px;
+            bottom: 14px;
+            z-index: 9999;
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #0b1220 0%, #1e293b 100%);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: 0 4px 14px rgba(2, 6, 23, 0.25);
+            color: #cbd5e1;
+            font-family: 'Inter', sans-serif;
+            font-size: 10.5px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            line-height: 1;
+            opacity: 0.92;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #made-with-love-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.32);
+            opacity: 1;
+        }
+
+        .made-with-love-heart {
+            display: inline-block;
+            margin-left: 4px;
+            transform-origin: center;
+            animation: made-with-love-beat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes made-with-love-beat {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            15% {
+                transform: scale(1.28);
+            }
+
+            30% {
+                transform: scale(1);
+            }
+
+            45% {
+                transform: scale(1.16);
+            }
+
+            60% {
+                transform: scale(1);
+            }
+        }
+    </style>
 </body>
 
 </html>

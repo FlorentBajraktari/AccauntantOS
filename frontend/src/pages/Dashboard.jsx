@@ -20,7 +20,7 @@ export default function Dashboard() {
   const { t } = useI18n();
 
   useEffect(() => {
-    api.get("/dashboard").then((r) => setData(r.data)).catch(() => {});
+    api.get("/dashboard").then((r) => setData(r.data)).catch(() => { });
   }, []);
 
   if (!data) return <Loading label={t("common.loading")} />;
@@ -41,7 +41,7 @@ export default function Dashboard() {
         subtitle={t("dashboard.subtitle")}
         actions={
           <>
-            <Button variant="outline" data-testid="quick-add-company" onClick={() => navigate("/companies")}>
+            <Button variant="outline" data-testid="quick-add-company" onClick={() => navigate("/companies?new=1")}>
               <Plus className="h-4 w-4 mr-1" /> {t("common.company")}
             </Button>
             <Button data-testid="quick-excel" onClick={() => navigate("/excel")}>

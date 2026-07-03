@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Building2, Plus, Pencil, Trash2, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { api, formatApiErrorDetail } from "@/lib/api";
@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -32,11 +32,32 @@ export default function Companies() {
   const [editing, setEditing] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const shouldOpenCreate = useMemo(() => searchParams.get("new") === "1", [searchParams]);
 
   const load = () => api.get("/companies").then((r) => setCompanies(r.data));
   useEffect(() => { load(); }, []);
+  useEffect(() => {
+    if (shouldOpenCreate && !open) {
+      setForm(EMPTY);
+      setEditing(null);
+      setOpen(true);
+    }
+  }, [open, shouldOpenCreate]);
 
-  const openCreate = () => { setForm(EMPTY); setEditing(null); setOpen(true); };
+  const clearCreateParam = () => {
+    if (!shouldOpenCreate) return;
+    const next = new URLSearchParams(searchParams);
+    next.delete("new");
+    setSearchParams(next, { replace: true });
+  };
+
+  const handleOpenChange = (nextOpen) => {
+    setOpen(nextOpen);
+    if (!nextOpen) clearCreateParam();
+  };
+
+  const openCreate = () => { setForm(EMPTY); setEditing(null); setOpen(true); clearCreateParam(); };
   const openEdit = (c) => { setForm(c); setEditing(c.id); setOpen(true); };
 
   const save = async () => {
@@ -45,7 +66,9 @@ export default function Companies() {
       if (editing) await api.put(`/companies/${editing}`, form);
       else await api.post("/companies", form);
       toast.success(editing ? "Company updated" : "Company created");
-      setOpen(false); load();
+      setOpen(false);
+      clearCreateParam();
+      load();
     } catch (e) { toast.error(formatApiErrorDetail(e.response?.data?.detail)); }
   };
 
@@ -128,9 +151,16 @@ export default function Companies() {
         </div>
       )}
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>{editing ? "Edit Company" : "New Company"}</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>{editing ? "Edit Company" : "New Company"}</DialogTitle>
+            <DialogDescription>
+              {editing
+                ? "Update the company profile, accounting defaults, and contact details."
+                : "Add a new client company with the basic profile and accounting settings."}
+            </DialogDescription>
+          </DialogHeader>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {field("name", "Company Name *")}
             {sel("legal_form", "Legal Form", ["GmbH", "AG", "Sàrl", "SA", "Einzelfirma", "Kollektivgesellschaft"])}

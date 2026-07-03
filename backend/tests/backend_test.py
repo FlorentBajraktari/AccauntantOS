@@ -1,16 +1,24 @@
 """AccountantOS backend E2E API tests."""
 import os
 import io
+from pathlib import Path
 import pytest
 import requests
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
 if not BASE_URL:
     # fallback for local test runs
-    with open("/app/frontend/.env") as f:
-        for line in f:
-            if line.startswith("REACT_APP_BACKEND_URL"):
-                BASE_URL = line.split("=", 1)[1].strip().rstrip("/")
+    frontend_env = Path(__file__).resolve().parents[2] / "frontend" / ".env"
+    if frontend_env.exists():
+        with frontend_env.open() as f:
+            for line in f:
+                if line.startswith("REACT_APP_BACKEND_URL"):
+                    BASE_URL = line.split("=", 1)[1].strip().rstrip("/")
+                    break
+
+if not BASE_URL:
+    raise RuntimeError(
+        "Set REACT_APP_BACKEND_URL or add frontend/.env before running backend tests.")
 
 API = f"{BASE_URL}/api"
 
@@ -22,7 +30,8 @@ ADMIN_PASSWORD = "Admin123!"
 def client():
     s = requests.Session()
     s.headers.update({"Content-Type": "application/json"})
-    r = s.post(f"{API}/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
+    r = s.post(f"{API}/auth/login",
+               json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
     assert r.status_code == 200, f"login failed: {r.status_code} {r.text}"
     token = r.json().get("token")
     s.headers["Authorization"] = f"Bearer {token}"
@@ -43,7 +52,8 @@ def company_id(client):
 # ---- Auth
 class TestAuth:
     def test_login_success(self):
-        r = requests.post(f"{API}/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
+        r = requests.post(
+            f"{API}/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
         assert r.status_code == 200
         d = r.json()
         assert d["email"] == ADMIN_EMAIL
@@ -51,7 +61,8 @@ class TestAuth:
         assert "access_token" in r.cookies
 
     def test_login_wrong_password(self):
-        r = requests.post(f"{API}/auth/login", json={"email": ADMIN_EMAIL, "password": "wrong"})
+        r = requests.post(f"{API}/auth/login",
+                          json={"email": ADMIN_EMAIL, "password": "wrong"})
         assert r.status_code == 401
 
     def test_me(self, client):
@@ -112,7 +123,8 @@ class TestCompanies:
         assert rg.status_code == 200
         assert rg.json()["name"] == "TEST_Co"
         # update
-        ru = client.put(f"{API}/companies/{cid}", json={**payload, "name": "TEST_Co2"})
+        ru = client.put(f"{API}/companies/{cid}",
+                        json={**payload, "name": "TEST_Co2"})
         assert ru.status_code == 200
         # verify
         rg2 = client.get(f"{API}/companies/{cid}")
@@ -163,7 +175,8 @@ class TestAPAR:
         assert rc.status_code == 200
         pid = rc.json()["id"]
         # update status
-        ru = client.put(f"{API}/payables/{pid}", json={**payload, "payment_status": "paid"})
+        ru = client.put(f"{API}/payables/{pid}",
+                        json={**payload, "payment_status": "paid"})
         assert ru.status_code == 200
         assert ru.json()["payment_status"] == "paid"
         # delete
@@ -199,13 +212,16 @@ class TestBank:
         files = {"file": ("test.csv", io.BytesIO(csv.encode()), "text/csv")}
         data = {"company_id": company_id}
         # remove Content-Type header for multipart
-        h = {k: v for k, v in client.headers.items() if k.lower() != "content-type"}
-        r = requests.post(f"{API}/bank-transactions/import", data=data, files=files, headers=h)
+        h = {k: v for k, v in client.headers.items() if k.lower() !=
+             "content-type"}
+        r = requests.post(f"{API}/bank-transactions/import",
+                          data=data, files=files, headers=h)
         assert r.status_code == 200, r.text
         assert r.json()["imported"] == 2
 
     def test_bank_match_and_report(self, client, company_id):
-        r = client.get(f"{API}/bank-transactions", params={"company_id": company_id})
+        r = client.get(f"{API}/bank-transactions",
+                       params={"company_id": company_id})
         assert r.status_code == 200
         txs = r.json()
         if txs:
@@ -213,7 +229,8 @@ class TestBank:
             rm = client.post(f"{API}/bank-transactions/{tx_id}/match")
             assert rm.status_code == 200
             assert "matched" in rm.json()
-        rr = client.get(f"{API}/bank-transactions/report/reconciliation", params={"company_id": company_id})
+        rr = client.get(f"{API}/bank-transactions/report/reconciliation",
+                        params={"company_id": company_id})
         assert rr.status_code == 200
         for k in ["matched_count", "unmatched_count", "matched_total", "unmatched_total"]:
             assert k in rr.json()
@@ -271,7 +288,8 @@ class TestExcel:
             for field in ("key", "title", "description", "category", "icon"):
                 assert field in t and t[field], f"missing {field} in {t}"
         keys = {t["key"] for t in tpls}
-        assert keys == set(ALL_EXCEL_KEYS), f"key mismatch: {keys ^ set(ALL_EXCEL_KEYS)}"
+        assert keys == set(
+            ALL_EXCEL_KEYS), f"key mismatch: {keys ^ set(ALL_EXCEL_KEYS)}"
 
     @pytest.mark.parametrize("key", EXCEL_KEYS)
     def test_excel_download(self, client, key):
@@ -282,10 +300,12 @@ class TestExcel:
         from openpyxl import load_workbook
         wb = load_workbook(io.BytesIO(r.content))
         assert "How to use" in wb.sheetnames, f"{key}: missing 'How to use' sheet, got {wb.sheetnames}"
-        assert len(wb.sheetnames) >= 2, f"{key}: expected >=2 sheets, got {wb.sheetnames}"
+        assert len(
+            wb.sheetnames) >= 2, f"{key}: expected >=2 sheets, got {wb.sheetnames}"
 
     def test_excel_download_with_company(self, client, company_id):
-        r = client.get(f"{API}/excel/download/ap_aging", params={"company_id": company_id})
+        r = client.get(f"{API}/excel/download/ap_aging",
+                       params={"company_id": company_id})
         assert r.status_code == 200
         assert r.content[:2] == b"PK"
         from openpyxl import load_workbook
@@ -294,7 +314,8 @@ class TestExcel:
 
 
 # ---- Reports
-REPORTS = ["profit-loss", "expense-by-category", "revenue-by-client", "balance-sheet", "cash-flow"]
+REPORTS = ["profit-loss", "expense-by-category",
+           "revenue-by-client", "balance-sheet", "cash-flow"]
 
 
 class TestReports:
@@ -322,7 +343,8 @@ class TestMisc:
         r = client.get(f"{API}/settings")
         assert r.status_code == 200
         cur = r.json() if isinstance(r.json(), dict) else {}
-        ru = client.put(f"{API}/settings", json={**cur, "test_key": "TEST_val"})
+        ru = client.put(f"{API}/settings",
+                        json={**cur, "test_key": "TEST_val"})
         assert ru.status_code == 200
 
 

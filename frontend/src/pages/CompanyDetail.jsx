@@ -15,7 +15,25 @@ export default function CompanyDetail() {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
 
-  useEffect(() => { api.get(`/companies/${id}/overview`).then((r) => setData(r.data)).catch(() => navigate("/companies")); }, [id]);
+  useEffect(() => {
+    let active = true;
+
+    api.get(`/companies/${id}/overview`)
+      .then((r) => {
+        if (active) {
+          setData(r.data);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          navigate("/companies");
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [id, navigate]);
 
   if (!data) return <Loading label="Loading company" />;
   const c = data.company;

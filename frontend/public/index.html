@@ -1,18 +1,19 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#000000" />
-        <meta name="description" content="AccountantOS — modern accounting operations platform for bookkeeping firms." />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" rel="stylesheet" />
-        <!--
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="AccountantOS — modern accounting operations platform for bookkeeping firms." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" rel="stylesheet" />
+    <!--
         manifest.json provides metadata used when your web app is installed on a
         user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
         -->
-        <!--
+    <!--
         Notice the use of %PUBLIC_URL% in the tags above.
         It will be replaced with the URL of the `public` folder during the build.
         Only files inside the `public` folder can be referenced from the HTML.
@@ -21,13 +22,14 @@
         work correctly both with client-side routing and a non-root public URL.
         Learn how to configure a non-root public URL by running `npm run build`.
         -->
-        <title>AccountantOS | Accounting Operations Platform</title>
-        <script>window.addEventListener("error",function(e){if(e.error instanceof DOMException&&e.error.name==="DataCloneError"&&e.message&&e.message.includes("PerformanceServerTiming")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
-    </head>
-    <body>
-        <noscript>You need to enable JavaScript to run this app.</noscript>
-        <div id="root"></div>
-        <!--
+    <title>AccountantOS | Accounting Operations Platform</title>
+    <script>window.addEventListener("error", function (e) { if (e.error instanceof DOMException && e.error.name === "DataCloneError" && e.message && e.message.includes("PerformanceServerTiming")) { e.stopImmediatePropagation(); e.preventDefault() } }, true);</script>
+</head>
+
+<body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
 
@@ -37,174 +39,6 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-        <style>
-            #emergent-badge {
-                transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease !important;
-                opacity: 0.92;
-            }
-            #emergent-badge:hover {
-                transform: translateY(-2px) !important;
-                box-shadow: 0 10px 26px rgba(0, 0, 0, 0.32) !important;
-                opacity: 1;
-            }
-            #emergent-badge .aos-heart {
-                display: inline-block;
-                animation: aosBeat 1.5s ease-in-out infinite;
-            }
-            @keyframes aosBeat {
-                0%, 100% { transform: scale(1); }
-                15% { transform: scale(1.28); }
-                30% { transform: scale(1); }
-                45% { transform: scale(1.16); }
-                60% { transform: scale(1); }
-            }
-        </style>
-        <a
-            id="emergent-badge"
-            href="https://www.florentdev.online"
-            target="_blank"
-            rel="noopener noreferrer"
-            style="
-                display: inline-flex !important;
-                box-sizing: border-box;
-                height: 26px;
-                padding: 4px 10px;
-                align-items: center !important;
-                gap: 5px;
-                border-radius: 999px !important;
-                background: linear-gradient(135deg, #0b1220 0%, #1e293b 100%) !important;
-                border: 1px solid rgba(255, 255, 255, 0.14) !important;
-                box-shadow: 0 4px 14px rgba(2, 6, 23, 0.25) !important;
-                position: fixed !important;
-                bottom: 14px;
-                right: 14px;
-                text-decoration: none !important;
-                cursor: pointer;
-                z-index: 9999 !important;
-            "
-        >
-            <p
-                data-heart="1"
-                style="
-                    color: #cbd5e1 !important;
-                    font-family: 'Inter', sans-serif !important;
-                    font-size: 10.5px !important;
-                    font-weight: 600 !important;
-                    letter-spacing: 0.2px !important;
-                    line-height: 1 !important;
-                    margin: 0 !important;
-                    white-space: nowrap !important;
-                "
-            >
-                Made with
-            </p>
-            <span class="aos-heart" style="color: #ff4d6d !important; font-size: 11px !important; line-height: 1 !important;">&#10084;</span>
-        </a>
-        <script>
-            !(function (t, e) {
-                var o, n, p, r;
-                e.__SV ||
-                    ((window.posthog = e),
-                    (e._i = []),
-                    (e.init = function (i, s, a) {
-                        function g(t, e) {
-                            var o = e.split(".");
-                            2 == o.length && ((t = t[o[0]]), (e = o[1])),
-                                (t[e] = function () {
-                                    t.push(
-                                        [e].concat(
-                                            Array.prototype.slice.call(
-                                                arguments,
-                                                0,
-                                            ),
-                                        ),
-                                    );
-                                });
-                        }
-                        ((p = t.createElement("script")).type =
-                            "text/javascript"),
-                            (p.crossOrigin = "anonymous"),
-                            (p.async = !0),
-                            (p.src =
-                                s.api_host.replace(
-                                    ".i.posthog.com",
-                                    "-assets.i.posthog.com",
-                                ) + "/static/array.js"),
-                            (r =
-                                t.getElementsByTagName(
-                                    "script",
-                                )[0]).parentNode.insertBefore(p, r);
-                        var u = e;
-                        for (
-                            void 0 !== a ? (u = e[a] = []) : (a = "posthog"),
-                                u.people = u.people || [],
-                                u.toString = function (t) {
-                                    var e = "posthog";
-                                    return (
-                                        "posthog" !== a && (e += "." + a),
-                                        t || (e += " (stub)"),
-                                        e
-                                    );
-                                },
-                                u.people.toString = function () {
-                                    return u.toString(1) + ".people (stub)";
-                                },
-                                o =
-                                    "init me ws ys ps bs capture je Di ks register register_once register_for_session unregister unregister_for_session Ps getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty Es $s createPersonProfile Is opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing Ss debug xs getPageViewId captureTraceFeedback captureTraceMetric".split(
-                                        " ",
-                                    ),
-                                n = 0;
-                            n < o.length;
-                            n++
-                        )
-                            g(u, o[n]);
-                        e._i.push([i, s, a]);
-                    }),
-                    (e.__SV = 1));
-            })(document, window.posthog || []);
-            posthog.init("phc_xAvL2Iq4tFmANRE7kzbKwaSqp1HJjN7x48s3vr0CMjs", {
-                api_host: "https://us.i.posthog.com",
-                person_profiles: "identified_only", // or 'always' to create profiles for anonymous users as well,
-                session_recording: {
-                    recordCrossOriginIframes: true,
-                    capturePerformance: false,
-                },
-            });
-        </script>
-        <script>
-            (function () {
-                function enforceBadge() {
-                    var badge = document.getElementById("emergent-badge");
-                    if (!badge) return;
-                    // Ensure the badge links to florentdev.online
-                    badge.setAttribute("href", "https://www.florentdev.online");
-                    badge.setAttribute("target", "_blank");
-                    badge.setAttribute("rel", "noopener noreferrer");
-                    badge.style.cursor = "pointer";
-                    // Remove any logo/svg injected by external scripts
-                    var svgs = badge.querySelectorAll("svg, img");
-                    svgs.forEach(function (el) { el.remove(); });
-                    // Force our text
-                    var p = badge.querySelector("p");
-                    if (!p) {
-                        p = document.createElement("p");
-                        badge.appendChild(p);
-                    }
-                    if (p.getAttribute("data-heart") !== "1") {
-                        p.setAttribute("data-heart", "1");
-                        p.style.cssText =
-                            "color:#FFF !important;font-family:'Inter',sans-serif !important;font-size:13px !important;font-weight:600 !important;line-height:20px !important;margin:0 !important;white-space:nowrap !important;";
-                        p.innerHTML = 'Made with <span style="color:#ff4d6d !important;">&#10084;</span>';
-                    }
-                    badge.style.width = "auto";
-                }
-                enforceBadge();
-                document.addEventListener("DOMContentLoaded", enforceBadge);
-                setInterval(enforceBadge, 500);
-                if (window.MutationObserver) {
-                    new MutationObserver(enforceBadge).observe(document.documentElement, { childList: true, subtree: true });
-                }
-            })();
-        </script>
-    </body>
+</body>
+
 </html>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Plus, Trash2, Download, AlertTriangle, Wallet, Users } from "lucide-react";
 import { toast } from "sonner";
 import { api, formatApiErrorDetail, downloadFile } from "@/lib/api";
@@ -28,12 +28,12 @@ export default function InvoiceModule({ type, partyField, title, subtitle, excel
   };
   const [form, setForm] = useState(blank);
 
-  const load = () => {
+  const load = useCallback(() => {
     const q = company !== "all" ? `?company_id=${company}` : "";
     return api.get(`/${type}/report/aging${q}`).then((r) => setReport(r.data));
-  };
+  }, [company, type]);
   useEffect(() => { api.get("/companies").then((r) => setCompanies(r.data)); }, []);
-  useEffect(() => { load(); }, [company]);
+  useEffect(() => { load(); }, [load]);
 
   const cname = (id) => companies.find((c) => c.id === id)?.name || "—";
   const balances = report ? (isAP ? report.supplier_balances : report.customer_balances) : {};

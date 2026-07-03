@@ -24,10 +24,26 @@ export default function ClientPortal() {
   useEffect(() => {
     api.get("/companies").then((r) => {
       setCompanies(r.data);
-      if (!company && r.data.length) setCompany(r.data[0].id);
+      setCompany((current) => current || r.data[0]?.id || "");
     });
   }, []);
-  useEffect(() => { if (company) { setData(null); api.get(`/portal/${company}`).then((r) => setData(r.data)); } }, [company]);
+  useEffect(() => {
+    if (!company) {
+      return;
+    }
+
+    let active = true;
+    setData(null);
+    api.get(`/portal/${company}`).then((r) => {
+      if (active) {
+        setData(r.data);
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [company]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -66,9 +82,8 @@ export default function ClientPortal() {
                   key={c.id}
                   data-testid="portal-client-card"
                   onClick={() => setCompany(c.id)}
-                  className={`flex items-center gap-3 p-3 rounded-md border text-left transition-all duration-200 ${
-                    active ? "border-primary bg-primary/5 ring-1 ring-primary/30" : "border-slate-200 hover:border-primary/40 hover:bg-slate-50"
-                  }`}
+                  className={`flex items-center gap-3 p-3 rounded-md border text-left transition-all duration-200 ${active ? "border-primary bg-primary/5 ring-1 ring-primary/30" : "border-slate-200 hover:border-primary/40 hover:bg-slate-50"
+                    }`}
                 >
                   <div className={`h-9 w-9 rounded-md flex items-center justify-center font-display font-bold text-sm ${active ? "bg-primary text-white" : "bg-slate-100 text-slate-600"}`}>
                     {c.name.slice(0, 2).toUpperCase()}

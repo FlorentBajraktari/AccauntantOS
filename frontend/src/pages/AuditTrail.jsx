@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { History, ShieldCheck } from "lucide-react";
 import { api } from "@/lib/api";
 import { fmtDateTime } from "@/lib/format";
@@ -23,12 +23,12 @@ export default function AuditTrail() {
   const [company, setCompany] = useState("all");
   const [logs, setLogs] = useState(null);
 
-  const load = () => {
+  const load = useCallback(() => {
     const q = company !== "all" ? `?company_id=${company}` : "";
     return api.get(`/audit${q}`).then((r) => setLogs(r.data));
-  };
+  }, [company]);
   useEffect(() => { api.get("/companies").then((r) => setCompanies(r.data)); }, []);
-  useEffect(() => { load(); }, [company]);
+  useEffect(() => { load(); }, [load]);
 
   const cname = (id) => companies.find((c) => c.id === id)?.name || "—";
 

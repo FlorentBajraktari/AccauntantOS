@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FileText, Plus, Sparkles, Trash2, Loader2, Filter } from "lucide-react";
 import { toast } from "sonner";
 import { api, formatApiErrorDetail } from "@/lib/api";
@@ -27,17 +27,24 @@ export default function Documents() {
   const [ocrLoading, setOcrLoading] = useState(false);
   const [form, setForm] = useState({ company_id: "", name: "", category: "Invoice", amount: 0, vat_amount: 0, counterparty: "", status: "uploaded", notes: "" });
 
-  const load = () => {
+  const load = useCallback(() => {
     let url = "/documents";
     const params = [];
     if (company !== "all") params.push(`company_id=${company}`);
     if (statusFilter !== "all") params.push(`status=${statusFilter}`);
     if (params.length) url += "?" + params.join("&");
     return api.get(url).then((r) => setDocs(r.data));
-  };
+  }, [company, statusFilter]);
 
   useEffect(() => { api.get("/companies").then((r) => setCompanies(r.data)); }, []);
-  useEffect(() => { load(); }, [company, statusFilter]);
+  useEffect(() => {
+    let url = "/documents";
+    const params = [];
+    if (company !== "all") params.push(`company_id=${company}`);
+    if (statusFilter !== "all") params.push(`status=${statusFilter}`);
+    if (params.length) url += "?" + params.join("&");
+    api.get(url).then((r) => setDocs(r.data));
+  }, [company, statusFilter]);
 
   const cname = (id) => companies.find((c) => c.id === id)?.name || "—";
 

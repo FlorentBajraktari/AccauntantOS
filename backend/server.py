@@ -5,30 +5,28 @@ bookkeeping workflow, AP/AR, bank reconciliation, VAT, month-end close,
 Excel center, reports, client portal, questions, deadlines, audit trail,
 settings, global search.
 """
+import seed_data
+import ocr as ocr_mod
+import excel_export
+from pydantic import BaseModel, Field, EmailStr
+from motor.motor_asyncio import AsyncIOMotorClient
+from starlette.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, Response, UploadFile, File, Form
+import bcrypt
+import jwt
+from typing import List, Optional
+from datetime import datetime, timezone, timedelta
+import logging
+import uuid
+import io
+import os
 from dotenv import load_dotenv
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / ".env")
 
-import os
-import io
-import uuid
-import logging
-from datetime import datetime, timezone, timedelta
-from typing import List, Optional
-
-import jwt
-import bcrypt
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, Request, Response, UploadFile, File, Form
-from fastapi.responses import StreamingResponse
-from starlette.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
-from pydantic import BaseModel, Field, EmailStr
-
-import excel_export
-import ocr as ocr_mod
-import seed_data
 
 # ---------------------------------------------------------------- DB / app
 mongo_url = os.environ["MONGO_URL"]
@@ -42,6 +40,16 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("accountantos")
 
 JWT_ALGO = "HS256"
+
+
+def get_cors_origins() -> list[str]:
+    raw = os.environ.get("CORS_ORIGINS", "")
+    if not raw.strip() or raw.strip() == "*":
+        return [
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+        ]
+    return [origin.strip() for origin in raw.split(",") if origin.strip()]
 
 
 def now_iso():
@@ -85,7 +93,8 @@ async def get_current_user(request: Request) -> dict:
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
     try:
-        payload = jwt.decode(token, os.environ["JWT_SECRET"], algorithms=[JWT_ALGO])
+        payload = jwt.decode(
+            token, os.environ["JWT_SECRET"], algorithms=[JWT_ALGO])
         user = await db.users.find_one({"id": payload["sub"]})
         if not user:
             raise HTTPException(status_code=401, detail="User not found")
@@ -251,7 +260,8 @@ async def login(body: LoginIn, response: Response):
     email = body.email.lower()
     user = await db.users.find_one({"email": email})
     if not user or not verify_password(body.password, user["password_hash"]):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
+        raise HTTPException(
+            status_code=401, detail="Invalid email or password")
     token = create_access_token(user["id"], email)
     set_auth_cookie(response, token)
     await log_audit(user, "user_login", "user", f"{email} logged in")
@@ -272,7 +282,8 @@ async def me(user: dict = Depends(get_current_user)):
 
 # ---------------------------------------------------------------- helpers for CRUD
 async def find_list(coll, query=None, sort_field="created_at", limit=1000):
-    cur = db[coll].find(query or {}, {"_id": 0}).sort(sort_field, -1).limit(limit)
+    cur = db[coll].find(query or {}, {"_id": 0}).sort(
+        sort_field, -1).limit(limit)
     return await cur.to_list(limit)
 
 
@@ -437,18 +448,22 @@ def register_crud(path, coll, model, label, audit_name):
 
 
 register_crud("payables", "payables", PayableIn, "payable", "payable")
-register_crud("receivables", "receivables", ReceivableIn, "receivable", "receivable")
+register_crud("receivables", "receivables",
+              ReceivableIn, "receivable", "receivable")
 register_crud("tasks", "tasks", TaskIn, "task", "task")
 register_crud("deadlines", "deadlines", DeadlineIn, "deadline", "deadline")
 register_crud("questions", "questions", QuestionIn, "question", "question")
-register_crud("checklist", "month_end", ChecklistItemIn, "checklist item", "checklist")
+register_crud("checklist", "month_end", ChecklistItemIn,
+              "checklist item", "checklist")
 register_crud("vat-returns", "vat_returns", VATReturnIn, "VAT return", "vat")
-register_crud("bank-transactions", "bank_transactions", BankTxIn, "bank transaction", "bank")
+register_crud("bank-transactions", "bank_transactions",
+              BankTxIn, "bank transaction", "bank")
 
 
 # ---------------------------------------------------------------- payables/receivables aging
 def build_aging(items):
-    buckets = {"current": 0.0, "b1_30": 0.0, "b31_60": 0.0, "b61_90": 0.0, "b90": 0.0}
+    buckets = {"current": 0.0, "b1_30": 0.0,
+               "b31_60": 0.0, "b61_90": 0.0, "b90": 0.0}
     total = 0.0
     for it in items:
         if it.get("payment_status") == "paid":
@@ -477,7 +492,8 @@ async def payables_aging(company_id: Optional[str] = None, user: dict = Depends(
     balances = {}
     for it in items:
         if it.get("payment_status") != "paid":
-            balances[it["supplier"]] = round(balances.get(it["supplier"], 0) + (it.get("amount", 0) or 0) + (it.get("vat", 0) or 0), 2)
+            balances[it["supplier"]] = round(balances.get(
+                it["supplier"], 0) + (it.get("amount", 0) or 0) + (it.get("vat", 0) or 0), 2)
     return {"aging": build_aging(items), "supplier_balances": balances, "items": items}
 
 
@@ -488,7 +504,8 @@ async def receivables_aging(company_id: Optional[str] = None, user: dict = Depen
     balances = {}
     for it in items:
         if it.get("payment_status") != "paid":
-            balances[it["customer"]] = round(balances.get(it["customer"], 0) + (it.get("amount", 0) or 0) + (it.get("vat", 0) or 0), 2)
+            balances[it["customer"]] = round(balances.get(
+                it["customer"], 0) + (it.get("amount", 0) or 0) + (it.get("vat", 0) or 0), 2)
     return {"aging": build_aging(items), "customer_balances": balances, "items": items}
 
 
@@ -551,7 +568,8 @@ async def vat_summary(company_id: Optional[str] = None, user: dict = Depends(get
     payables = await find_list("payables", q)
     output_vat = round(sum(r.get("vat", 0) or 0 for r in receivables), 2)
     input_vat = round(sum(p.get("vat", 0) or 0 for p in payables), 2)
-    taxable_revenue = round(sum(r.get("amount", 0) or 0 for r in receivables), 2)
+    taxable_revenue = round(
+        sum(r.get("amount", 0) or 0 for r in receivables), 2)
     deductible = round(sum(p.get("amount", 0) or 0 for p in payables), 2)
     returns = await find_list("vat_returns", q, "period")
     return {
@@ -572,10 +590,13 @@ async def dashboard(user: dict = Depends(get_current_user)):
     tasks = await find_list("tasks")
     deadlines = await find_list("deadlines", None, "due_date")
 
-    pending_tasks = [t for t in tasks if t.get("status") not in ("Completed", "Booked")]
+    pending_tasks = [t for t in tasks if t.get(
+        "status") not in ("Completed", "Booked")]
     missing_docs = [t for t in tasks if t.get("status") == "Missing Documents"]
-    overdue_invoices = [p for p in payables if p.get("payment_status") != "paid" and days_overdue(p.get("due_date", "")) > 0]
-    open_vat = [d for d in deadlines if d.get("type") == "VAT" and d.get("status") == "open"]
+    overdue_invoices = [p for p in payables if p.get(
+        "payment_status") != "paid" and days_overdue(p.get("due_date", "")) > 0]
+    open_vat = [d for d in deadlines if d.get(
+        "type") == "VAT" and d.get("status") == "open"]
 
     revenue = round(sum(r.get("amount", 0) or 0 for r in receivables), 2)
     expenses = round(sum(p.get("amount", 0) or 0 for p in payables), 2)
@@ -590,11 +611,13 @@ async def dashboard(user: dict = Depends(get_current_user)):
     for p in payables:
         m = (p.get("invoice_date") or "")[:7]
         exp_by_month[m] += p.get("amount", 0) or 0
-    months = sorted(set(list(rev_by_month.keys()) + list(exp_by_month.keys())) - {""})[-6:]
+    months = sorted(set(list(rev_by_month.keys()) +
+                    list(exp_by_month.keys())) - {""})[-6:]
     monthly = [{"month": m, "revenue": round(rev_by_month[m], 2), "expenses": round(exp_by_month[m], 2),
                 "profit": round(rev_by_month[m] - exp_by_month[m], 2)} for m in months]
 
-    upcoming = [d for d in deadlines if days_overdue(d.get("due_date", "")) <= 0][:6]
+    upcoming = [d for d in deadlines if days_overdue(
+        d.get("due_date", "")) <= 0][:6]
 
     return {
         "total_companies": len(companies),
@@ -679,13 +702,17 @@ async def search(q: str, user: dict = Depends(get_current_user)):
     rx = {"$regex": q, "$options": "i"}
     results = []
     for c in await db.companies.find({"name": rx}, {"_id": 0}).limit(5).to_list(5):
-        results.append({"type": "company", "id": c["id"], "title": c["name"], "subtitle": c.get("legal_form", "")})
+        results.append(
+            {"type": "company", "id": c["id"], "title": c["name"], "subtitle": c.get("legal_form", "")})
     for d in await db.documents.find({"name": rx}, {"_id": 0}).limit(5).to_list(5):
-        results.append({"type": "document", "id": d["id"], "title": d["name"], "subtitle": d.get("category", "")})
+        results.append(
+            {"type": "document", "id": d["id"], "title": d["name"], "subtitle": d.get("category", "")})
     for p in await db.payables.find({"$or": [{"supplier": rx}, {"invoice_number": rx}]}, {"_id": 0}).limit(5).to_list(5):
-        results.append({"type": "payable", "id": p["id"], "title": p["supplier"], "subtitle": p.get("invoice_number", "")})
+        results.append({"type": "payable", "id": p["id"], "title": p["supplier"], "subtitle": p.get(
+            "invoice_number", "")})
     for r in await db.receivables.find({"$or": [{"customer": rx}, {"invoice_number": rx}]}, {"_id": 0}).limit(5).to_list(5):
-        results.append({"type": "receivable", "id": r["id"], "title": r["customer"], "subtitle": r.get("invoice_number", "")})
+        results.append({"type": "receivable", "id": r["id"], "title": r["customer"], "subtitle": r.get(
+            "invoice_number", "")})
     return {"results": results}
 
 
@@ -792,7 +819,7 @@ app.include_router(api)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get("CORS_ORIGINS", "*").split(","),
+    allow_origins=get_cors_origins(),
     allow_methods=["*"],
     allow_headers=["*"],
 )

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Landmark, Upload, Link2, Link2Off, Download, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { api, downloadFile } from "@/lib/api";
@@ -16,12 +16,12 @@ export default function BankReconciliation() {
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef();
 
-  const load = () => {
+  const load = useCallback(() => {
     const q = company !== "all" ? `?company_id=${company}` : "";
     return api.get(`/bank-transactions/report/reconciliation${q}`).then((r) => setReport(r.data));
-  };
+  }, [company]);
   useEffect(() => { api.get("/companies").then((r) => setCompanies(r.data)); }, []);
-  useEffect(() => { load(); }, [company]);
+  useEffect(() => { load(); }, [load]);
 
   const cname = (id) => companies.find((c) => c.id === id)?.name || "—";
 

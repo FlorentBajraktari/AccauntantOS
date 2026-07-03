@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Receipt, Download, ArrowUpRight, ArrowDownRight, Scale } from "lucide-react";
 import { toast } from "sonner";
 import { api, downloadFile } from "@/lib/api";
@@ -14,12 +14,15 @@ export default function VAT() {
   const [company, setCompany] = useState("all");
   const [data, setData] = useState(null);
 
-  const load = () => {
+  const load = useCallback(() => {
     const q = company !== "all" ? `?company_id=${company}` : "";
     return api.get(`/vat/summary${q}`).then((r) => setData(r.data));
-  };
+  }, [company]);
   useEffect(() => { api.get("/companies").then((r) => setCompanies(r.data)); }, []);
-  useEffect(() => { load(); }, [company]);
+  useEffect(() => {
+    const q = company !== "all" ? `?company_id=${company}` : "";
+    api.get(`/vat/summary${q}`).then((r) => setData(r.data));
+  }, [company]);
 
   const exportExcel = () => {
     const q = company !== "all" ? `?company_id=${company}` : "";

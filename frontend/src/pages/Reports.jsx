@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { BarChart3, Download, TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import {
   ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend,
@@ -30,20 +30,30 @@ export default function Reports() {
   const [byCat, setByCat] = useState([]);
   const [byClient, setByClient] = useState([]);
 
-  const q = () => (company !== "all" ? `?company_id=${company}` : "");
-  const load = async () => {
+  const q = company !== "all" ? `?company_id=${company}` : "";
+  const load = useCallback(async () => {
     const [a, b, c] = await Promise.all([
-      api.get(`/reports/profit-loss${q()}`),
-      api.get(`/reports/expense-by-category${q()}`),
-      api.get(`/reports/revenue-by-client${q()}`),
+      api.get(`/reports/profit-loss${q}`),
+      api.get(`/reports/expense-by-category${q}`),
+      api.get(`/reports/revenue-by-client${q}`),
     ]);
     setPl(a.data); setByCat(b.data.data); setByClient(c.data.data);
-  };
+  }, [q]);
   useEffect(() => { api.get("/companies").then((r) => setCompanies(r.data)); }, []);
-  useEffect(() => { load(); }, [company]);
+  useEffect(() => {
+    Promise.all([
+      api.get(`/reports/profit-loss${q}`),
+      api.get(`/reports/expense-by-category${q}`),
+      api.get(`/reports/revenue-by-client${q}`),
+    ]).then(([a, b, c]) => {
+      setPl(a.data);
+      setByCat(b.data.data);
+      setByClient(c.data.data);
+    });
+  }, [q]);
 
   const exportExcel = (key) => {
-    toast.promise(downloadFile(`/excel/download/${key}${q()}`, `${key}.xlsx`),
+    toast.promise(downloadFile(`/excel/download/${key}${q}`, `${key}.xlsx`),
       { loading: "Generating…", success: "Downloaded", error: "Failed" });
   };
 
